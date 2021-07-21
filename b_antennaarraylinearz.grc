@@ -1,0 +1,342 @@
+options:
+  parameters:
+    author: Homero Ortega
+    catch_exceptions: 'True'
+    category: borrar
+    cmake_opt: ''
+    comment: ''
+    copyright: Grupo de Investigacion RadioGIS Universidad Industrial de Santander
+    description: "Simula el comportamiento del hardware de un arreglo de antenas m\xE1\
+      s basico que es el caso en que los radiadores est\xE1n dispuestos de manera\
+      \ lineal, sobre el eje z, donde Dz es la distancia entre los radiadores dada\
+      \ en longitudes de onda, por ejemplo Dz=0.5 significa media longitud de onda.\
+      \ N es el numeo de radiadores, distancias es la distantacia desde z=0 hasta\
+      \ cada radiador; fases son los desfases que sufre cada se\xF1al para llegar\
+      \ a un punto de observaci\xF3n ubicado en un angulo theta_i"
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: hb
+    hier_block_src_path: '.:'
+    id: b_antennaarraylinearz
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: b_antennaarraylinearz
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: N
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [622, 11]
+    rotation: 0
+    state: enabled
+- name: distancias
+  id: variable
+  parameters:
+    comment: ''
+    value: Dz*np.array(range(N))
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [695, 10]
+    rotation: 0
+    state: enabled
+- name: fases
+  id: variable
+  parameters:
+    comment: ''
+    value: -2*np.pi*distancias*np.cos(theta_i_gr*np.pi/180)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [833, 10]
+    rotation: 0
+    state: enabled
+- name: Dz
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: separacion en lambdas
+    short_id: ''
+    type: eng_float
+    value: '0.5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [203, 7]
+    rotation: 0
+    state: enabled
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '4'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [514, 212]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: np.exp(1j*fases[0])
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [241, 182]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_1_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: np.exp(1j*fases[1])
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [239, 227]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_1_1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: np.exp(1j*fases[2])
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [237, 273]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_1_2
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: np.exp(1j*fases[3])
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [236, 317]
+    rotation: 0
+    state: true
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy as np
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [998, 12]
+    rotation: 0
+    state: true
+- name: pad_sink_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: out
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [636, 257]
+    rotation: 0
+    state: enabled
+- name: pad_source_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in0
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [91, 182]
+    rotation: 0
+    state: enabled
+- name: pad_source_0_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in1
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [92, 228]
+    rotation: 0
+    state: enabled
+- name: pad_source_0_0_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in3
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [92, 318]
+    rotation: 0
+    state: enabled
+- name: pad_source_0_1
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in2
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [91, 272]
+    rotation: 0
+    state: enabled
+- name: phi_i_gr
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: angulo phi
+    short_id: ''
+    type: eng_float
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [502, 8]
+    rotation: 0
+    state: enabled
+- name: theta_i_gr
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: angulo theta
+    short_id: ''
+    type: eng_float
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [382, 6]
+    rotation: 0
+    state: enabled
+
+connections:
+- [blocks_add_xx_0, '0', pad_sink_0, '0']
+- [blocks_multiply_const_vxx_1, '0', blocks_add_xx_0, '0']
+- [blocks_multiply_const_vxx_1_0, '0', blocks_add_xx_0, '1']
+- [blocks_multiply_const_vxx_1_1, '0', blocks_add_xx_0, '2']
+- [blocks_multiply_const_vxx_1_2, '0', blocks_add_xx_0, '3']
+- [pad_source_0, '0', blocks_multiply_const_vxx_1, '0']
+- [pad_source_0_0, '0', blocks_multiply_const_vxx_1_0, '0']
+- [pad_source_0_0_0, '0', blocks_multiply_const_vxx_1_2, '0']
+- [pad_source_0_1, '0', blocks_multiply_const_vxx_1_1, '0']
+
+metadata:
+  file_format: 1
