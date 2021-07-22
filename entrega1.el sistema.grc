@@ -186,8 +186,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1044, 337]
-    rotation: 180
+    coordinate: [747, 491]
+    rotation: 0
     state: true
 - name: analog_random_source_x_0
   id: analog_random_source_x
@@ -206,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [7, 191]
+    coordinate: [8, 232]
     rotation: 0
     state: true
 - name: b_antennaarraylinearz_0
@@ -224,7 +224,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [740, 188]
+    coordinate: [739, 230]
     rotation: 0
     state: true
 - name: blocks_add_xx_0
@@ -242,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1002, 260]
+    coordinate: [942, 480]
     rotation: 0
     state: true
 - name: blocks_complex_to_mag_0
@@ -258,7 +258,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [177, 617]
+    coordinate: [296, 749]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_1
@@ -276,7 +276,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [566, 154]
+    coordinate: [565, 196]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_1_0
@@ -294,7 +294,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [563, 201]
+    coordinate: [562, 243]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_1_0_0
@@ -312,7 +312,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [562, 248]
+    coordinate: [561, 290]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_1_0_0_0
@@ -330,7 +330,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [561, 294]
+    coordinate: [560, 336]
     rotation: 0
     state: true
 - name: digital_chunks_to_symbols_xx_0
@@ -350,7 +350,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [144, 219]
+    coordinate: [143, 261]
     rotation: 0
     state: true
 - name: epy_block_0_1_0_0
@@ -360,27 +360,28 @@ blocks:
     _source_code: "import numpy as np\nfrom gnuradio import gr\nimport matplotlib.pyplot\
       \ as plt\n\nclass polar_graf_f(gr.sync_block):\n    \"\"\"\n    Grafica polar,\
       \ pero los valores a graficar estan dados por la senal de magnitud entrante\
-      \ y el parametro angular theta. Hecho por Homero Ortega Boada. Universida Industrial\
-      \ de Santander.\nHecho con el fin de graficar cosas comos patron de radiacion\
-      \ de una antena, aunque inicialmente se inspir\xF3 en el visor de constelaciones.\
-      \ Rmax sirve para definir los limites de la grafica\"\"\"\n    def __init__(self,samp_rate=32000,\
-      \ theta=0, Rmax=8, nombrex='Plano xy', nombrey='Eje z'):\n        gr.sync_block.__init__(self,\n\
+      \ y el parametro angular theta. Hecho por Homero Ortega Boada. Universidad Industrial\
+      \ de Santander.\nPermite observar en el espacio el punto de observacion de un\
+      \ usuario receptor mientras ser mueve de manera angular con respecto a la posici\xF3\
+      n del arreglo. Permite graficar el patron de radiaci\xF3n si se variar la posici\xF3\
+      n de observaci\xF3n para todos los posiblea angulos.Rmax sirve para definir\
+      \ los limites de la grafica\"\"\"\n    def __init__(self,samp_rate=32000, theta=0,\
+      \ Rmax=8, nombrex='Plano xy', nombrey='Eje z'):\n        gr.sync_block.__init__(self,\n\
       \            name=\"e_polar_graf_f\",\n            in_sig=[np.float32],\n  \
       \          out_sig=None)\n\n        #########################################\n\
       \        ##        Parametros                   ##\n        #########################################\n\
       \        self.Tsamp=1./samp_rate\n        self.theta=theta\n        self.Rmax=Rmax\n\
       \        self.nombrex=nombrex\n        self.nombrey=nombrey\n        self.contador=0\n\
-      \        self.fig=0\n        self.ax=0\n        #self.xb=0\n        #self.yb=0\n\
-      \                        \n    def work(self, input_items, output_items):\n\
-      \        R=input_items[0]\n        z=R*np.cos(self.theta)\n        y=R*np.sin(self.theta)\n\
-      \        if self.contador == 0:\n           self.contador=1\n           self.fig=plt.figure()\n\
+      \        self.fig=0\n        self.ax=0\n\n    ################################################\n\
+      \    ##       work() es la funci\xF3n clave           ##\n    ## para capturar\
+      \ la senal entrante y graficar ##\n    ################################################\n\
+      \    def work(self, input_items, output_items):\n        R=input_items[0]\n\
+      \        z=R*np.cos(self.theta)\n        y=R*np.sin(self.theta)\n        if\
+      \ self.contador == 0:\n           self.contador=1\n           self.fig=plt.figure()\n\
       \           self.ax=self.fig.add_subplot(111)\n           self.ax.set_xlim(-self.Rmax,self.Rmax)\n\
       \           self.ax.set_ylim(-self.Rmax,self.Rmax)\n           plt.ylabel(self.nombrey)\n\
-      \           plt.xlabel(self.nombrex)\n        \n        #self.ax.scatter(self.xb,self.yb,c='w',\
-      \ marker='o')\n        \n        self.ax.plot(y,z, color=\"blue\")\n       \
-      \ plt.pause(self.Tsamp)\n        \n        #L=len(R)\n        #self.xb=y[L-1]\n\
-      \        #self.yb=z[L-1]\n        #self.ax.scatter(self.xb,self.yb,c='r', marker='o')\n\
-      \        # plt.clf() # esto limpia la grafica\n        return len(input_items[0])\n"
+      \           plt.xlabel(self.nombrex)\n        self.ax.plot(y,z, color=\"blue\"\
+      )\n        plt.pause(self.Tsamp)\n        return len(input_items[0])\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -395,14 +396,16 @@ blocks:
       \ '0'), ('Rmax', '8'), ('nombrex', \"'Plano xy'\"), ('nombrey', \"'Eje z'\"\
       )], [('0', 'float', 1)], [], '\\n    Grafica polar, pero los valores a graficar\
       \ estan dados por la senal de magnitud entrante y el parametro angular theta.\
-      \ Hecho por Homero Ortega Boada. Universida Industrial de Santander.\\nHecho\
-      \ con el fin de graficar cosas comos patron de radiacion de una antena, aunque\
-      \ inicialmente se inspir\xF3 en el visor de constelaciones. Rmax sirve para\
-      \ definir los limites de la grafica', ['Rmax', 'nombrex', 'nombrey', 'theta'])"
+      \ Hecho por Homero Ortega Boada. Universidad Industrial de Santander.\\nPermite\
+      \ observar en el espacio el punto de observacion de un usuario receptor mientras\
+      \ ser mueve de manera angular con respecto a la posici\xF3n del arreglo. Permite\
+      \ graficar el patron de radiaci\xF3n si se variar la posici\xF3n de observaci\xF3\
+      n para todos los posiblea angulos.Rmax sirve para definir los limites de la\
+      \ grafica', ['Rmax', 'nombrex', 'nombrey', 'theta'])"
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [374, 471]
+    coordinate: [516, 713]
     rotation: 0
     state: enabled
 - name: import_0
@@ -434,7 +437,41 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [319, 207]
+    coordinate: [318, 249]
+    rotation: 0
+    state: true
+- name: menu
+  id: qtgui_tab_widget
+  parameters:
+    alias: ''
+    comment: ''
+    gui_hint: ''
+    label0: constelacion y campo
+    label1: tiempo y frec
+    label10: Tab 10
+    label11: Tab 11
+    label12: Tab 12
+    label13: Tab 13
+    label14: Tab 14
+    label15: Tab 15
+    label16: Tab 16
+    label17: Tab 17
+    label18: Tab 18
+    label19: Tab 19
+    label2: Tab 2
+    label3: Tab 3
+    label4: Tab 4
+    label5: Tab 5
+    label6: Tab 6
+    label7: Tab 7
+    label8: Tab 8
+    label9: Tab 9
+    num_tabs: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [923, 651]
     rotation: 0
     state: true
 - name: qtgui_const_sink_x_1
@@ -466,7 +503,7 @@ blocks:
     color9: '"red"'
     comment: ''
     grid: 'False'
-    gui_hint: ''
+    gui_hint: menu@0:2,0,1,1
     label1: ''
     label10: ''
     label2: ''
@@ -526,9 +563,90 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [138, 469]
+    coordinate: [264, 494]
     rotation: 0
     state: enabled
+- name: qtgui_freq_sink_x_0
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    average: '0.05'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: menu@1:2,0,1,1
+    label: Relative Gain
+    label1: ''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [619, 549]
+    rotation: 0
+    state: true
 - name: qtgui_number_sink_0
   id: qtgui_number_sink
   parameters:
@@ -558,7 +676,7 @@ blocks:
     factor8: '1'
     factor9: '1'
     graph_type: qtgui.NUM_GRAPH_HORIZ
-    gui_hint: ''
+    gui_hint: menu@0:1,0,1,1
     label1: Campo E
     label10: ''
     label2: ''
@@ -589,9 +707,106 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [490, 594]
+    coordinate: [513, 614]
     rotation: 0
     state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: menu@1:1,0,1,1
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [274, 588]
+    rotation: 0
+    state: true
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -602,7 +817,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1101, 221]
+    coordinate: [1027, 276]
     rotation: 0
     state: true
 - name: virtual_sink_0_0
@@ -615,7 +830,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 272]
+    coordinate: [1035, 491]
     rotation: 0
     state: true
 - name: virtual_source_0
@@ -628,7 +843,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [38, 616]
+    coordinate: [130, 744]
     rotation: 0
     state: enabled
 - name: virtual_source_0_0
@@ -641,7 +856,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [15, 485]
+    coordinate: [141, 510]
     rotation: 0
     state: enabled
 
@@ -664,6 +879,8 @@ connections:
 - [interp_fir_filter_xxx_0, '0', blocks_multiply_const_vxx_1_0_0_0, '0']
 - [virtual_source_0, '0', blocks_complex_to_mag_0, '0']
 - [virtual_source_0_0, '0', qtgui_const_sink_x_1, '0']
+- [virtual_source_0_0, '0', qtgui_freq_sink_x_0, '0']
+- [virtual_source_0_0, '0', qtgui_time_sink_x_0, '0']
 
 metadata:
   file_format: 1
