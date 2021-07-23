@@ -157,7 +157,7 @@ blocks:
     bus_structure: null
     coordinate: [961, 12]
     rotation: 0
-    state: true
+    state: enabled
 - name: w
   id: variable
   parameters:

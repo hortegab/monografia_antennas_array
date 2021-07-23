@@ -21,29 +21,20 @@ if __name__ == '__main__':
         except:
             print("Warning: failed to XInitThreads()")
 
-import os
-import sys
-sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
-
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio.filter import firdes
 import sip
-from b_antennaarraylinearz import b_antennaarraylinearz  # grc-generated hier_block
-from gnuradio import analog
 from gnuradio import blocks
-import numpy
-from gnuradio import digital
-from gnuradio import filter
 from gnuradio import gr
 from gnuradio.fft import window
+import sys
 import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
-import epy_block_0_1_0_0
 import numpy as np
 
 
@@ -90,6 +81,7 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
         self.Rs = Rs = 4000
         self.w = w = [1,1,1,1]
         self.theta_i_gr = theta_i_gr = 0
+        self.theta = theta = np.linspace(0,9,10)
         self.samp_rate = samp_rate = Rs*Sps
         self.phi_i_gr = phi_i_gr = 0
         self.Rmax = Rmax = 6
@@ -107,26 +99,7 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._phi_i_gr_range = Range(0, 36000, Resol_angular_gr, 0, 200)
-        self._phi_i_gr_win = RangeWidget(self._phi_i_gr_range, self.set_phi_i_gr, 'phi_i_gr', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._phi_i_gr_win, 1, 0, 1, 1)
-        for r in range(1, 2):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.menu = Qt.QTabWidget()
-        self.menu_widget_0 = Qt.QWidget()
-        self.menu_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.menu_widget_0)
-        self.menu_grid_layout_0 = Qt.QGridLayout()
-        self.menu_layout_0.addLayout(self.menu_grid_layout_0)
-        self.menu.addTab(self.menu_widget_0, 'constelacion y campo')
-        self.menu_widget_1 = Qt.QWidget()
-        self.menu_layout_1 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.menu_widget_1)
-        self.menu_grid_layout_1 = Qt.QGridLayout()
-        self.menu_layout_1.addLayout(self.menu_grid_layout_1)
-        self.menu.addTab(self.menu_widget_1, 'tiempo y frec')
-        self.top_grid_layout.addWidget(self.menu)
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
+        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
             "", #name
@@ -134,13 +107,13 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
+        self.qtgui_time_sink_x_0.set_y_axis(-10, 10)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(True)
+        self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
@@ -161,12 +134,9 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(2):
+        for i in range(1):
             if len(labels[i]) == 0:
-                if (i % 2 == 0):
-                    self.qtgui_time_sink_x_0.set_line_label(i, "Re{{Data {0}}}".format(i/2))
-                else:
-                    self.qtgui_time_sink_x_0.set_line_label(i, "Im{{Data {0}}}".format(i/2))
+                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
             else:
                 self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
             self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
@@ -176,180 +146,26 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.menu_grid_layout_1.addWidget(self._qtgui_time_sink_x_0_win, 1, 0, 1, 1)
-        for r in range(1, 2):
-            self.menu_grid_layout_1.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.menu_grid_layout_1.setColumnStretch(c, 1)
-        self.qtgui_number_sink_0 = qtgui.number_sink(
-            gr.sizeof_float,
-            0,
-            qtgui.NUM_GRAPH_HORIZ,
-            1,
-            None # parent
-        )
-        self.qtgui_number_sink_0.set_update_time(0.10)
-        self.qtgui_number_sink_0.set_title("Campo E")
-
-        labels = ['Campo E', '', '', '', '',
-            '', '', '', '', '']
-        units = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
-            ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
-        factor = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-
-        for i in range(1):
-            self.qtgui_number_sink_0.set_min(i, 0)
-            self.qtgui_number_sink_0.set_max(i, 10)
-            self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
-            if len(labels[i]) == 0:
-                self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_number_sink_0.set_label(i, labels[i])
-            self.qtgui_number_sink_0.set_unit(i, units[i])
-            self.qtgui_number_sink_0.set_factor(i, factor[i])
-
-        self.qtgui_number_sink_0.enable_autoscale(False)
-        self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
-        self.menu_grid_layout_0.addWidget(self._qtgui_number_sink_0_win, 1, 0, 1, 1)
-        for r in range(1, 2):
-            self.menu_grid_layout_0.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.menu_grid_layout_0.setColumnStretch(c, 1)
-        self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
-            1024, #size
-            window.WIN_BLACKMAN_hARRIS, #wintype
-            0, #fc
-            samp_rate, #bw
-            "", #name
-            1,
-            None # parent
-        )
-        self.qtgui_freq_sink_x_0.set_update_time(0.10)
-        self.qtgui_freq_sink_x_0.set_y_axis(-140, 10)
-        self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
-        self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
-        self.qtgui_freq_sink_x_0.enable_autoscale(True)
-        self.qtgui_freq_sink_x_0.enable_grid(False)
-        self.qtgui_freq_sink_x_0.set_fft_average(0.05)
-        self.qtgui_freq_sink_x_0.enable_axis_labels(True)
-        self.qtgui_freq_sink_x_0.enable_control_panel(False)
-        self.qtgui_freq_sink_x_0.set_fft_window_normalized(False)
-
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-            "magenta", "yellow", "dark red", "dark green", "dark blue"]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_freq_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_freq_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_freq_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_freq_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.menu_grid_layout_1.addWidget(self._qtgui_freq_sink_x_0_win, 2, 0, 1, 1)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 2, 1, 1, 1)
         for r in range(2, 3):
-            self.menu_grid_layout_1.setRowStretch(r, 1)
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(1, 2):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self._phi_i_gr_range = Range(0, 36000, Resol_angular_gr, 0, 200)
+        self._phi_i_gr_win = RangeWidget(self._phi_i_gr_range, self.set_phi_i_gr, 'phi_i_gr', "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._phi_i_gr_win, 1, 0, 1, 1)
+        for r in range(1, 2):
+            self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
-            self.menu_grid_layout_1.setColumnStretch(c, 1)
-        self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
-            1024, #size
-            "Constelacion", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_const_sink_x_1.set_update_time(0.10)
-        self.qtgui_const_sink_x_1.set_y_axis(-10, 10)
-        self.qtgui_const_sink_x_1.set_x_axis(-10, 10)
-        self.qtgui_const_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, "")
-        self.qtgui_const_sink_x_1.enable_autoscale(False)
-        self.qtgui_const_sink_x_1.enable_grid(False)
-        self.qtgui_const_sink_x_1.enable_axis_labels(True)
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ["blue", "red", "red", "red", "red",
-            "red", "red", "red", "red", "red"]
-        styles = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        markers = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_const_sink_x_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_const_sink_x_1.set_line_label(i, labels[i])
-            self.qtgui_const_sink_x_1.set_line_width(i, widths[i])
-            self.qtgui_const_sink_x_1.set_line_color(i, colors[i])
-            self.qtgui_const_sink_x_1.set_line_style(i, styles[i])
-            self.qtgui_const_sink_x_1.set_line_marker(i, markers[i])
-            self.qtgui_const_sink_x_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.pyqwidget(), Qt.QWidget)
-        self.menu_grid_layout_0.addWidget(self._qtgui_const_sink_x_1_win, 2, 0, 1, 1)
-        for r in range(2, 3):
-            self.menu_grid_layout_0.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.menu_grid_layout_0.setColumnStretch(c, 1)
-        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_ccc(Sps, [1]*Sps)
-        self.interp_fir_filter_xxx_0.declare_sample_delay(0)
-        self.epy_block_0_1_0_0 = epy_block_0_1_0_0.polar_graf_f(samp_rate=samp_rate, theta=theta_i_gr*np.pi/180, Rmax=Rmax, nombrex='Plano xy', nombrey='Eje z')
-        self.digital_chunks_to_symbols_xx_0 = digital.chunks_to_symbols_ic((-1.-1.j, -1.+1.j, 1.+1.j, 1.-1.j), 1)
-        self.blocks_multiply_const_vxx_1_0_0_0 = blocks.multiply_const_cc(w[1])
-        self.blocks_multiply_const_vxx_1_0_0 = blocks.multiply_const_cc(w[1])
-        self.blocks_multiply_const_vxx_1_0 = blocks.multiply_const_cc(w[1])
-        self.blocks_multiply_const_vxx_1 = blocks.multiply_const_cc(w[0])
-        self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
-        self.blocks_add_xx_0 = blocks.add_vcc(1)
-        self.b_antennaarraylinearz_0 = b_antennaarraylinearz(
-            Dz=Dz,
-            phi_i_gr=0,
-            theta_i_gr=theta_i_gr,
-        )
-        self.analog_random_source_x_0 = blocks.vector_source_i(list(map(int, numpy.random.randint(0, 4, 1000))), True)
-        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_GAUSSIAN, 1, 0)
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.blocks_vector_source_x_0 = blocks.vector_source_f(theta, True, 1, [])
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_0, 1))
-        self.connect((self.analog_random_source_x_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
-        self.connect((self.b_antennaarraylinearz_0, 0), (self.blocks_add_xx_0, 0))
-        self.connect((self.b_antennaarraylinearz_0, 0), (self.blocks_complex_to_mag_0, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.qtgui_const_sink_x_1, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.qtgui_freq_sink_x_0, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_complex_to_mag_0, 0), (self.epy_block_0_1_0_0, 0))
-        self.connect((self.blocks_complex_to_mag_0, 0), (self.qtgui_number_sink_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.b_antennaarraylinearz_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_1_0, 0), (self.b_antennaarraylinearz_0, 1))
-        self.connect((self.blocks_multiply_const_vxx_1_0_0, 0), (self.b_antennaarraylinearz_0, 2))
-        self.connect((self.blocks_multiply_const_vxx_1_0_0_0, 0), (self.b_antennaarraylinearz_0, 3))
-        self.connect((self.digital_chunks_to_symbols_xx_0, 0), (self.interp_fir_filter_xxx_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.blocks_multiply_const_vxx_1, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.blocks_multiply_const_vxx_1_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.blocks_multiply_const_vxx_1_0_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.qtgui_time_sink_x_0, 0))
 
 
     def closeEvent(self, event):
@@ -366,7 +182,6 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
     def set_Sps(self, Sps):
         self.Sps = Sps
         self.set_samp_rate(self.Rs*self.Sps)
-        self.interp_fir_filter_xxx_0.set_taps([1]*self.Sps)
 
     def get_Rs(self):
         return self.Rs
@@ -380,25 +195,25 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
 
     def set_w(self, w):
         self.w = w
-        self.blocks_multiply_const_vxx_1.set_k(self.w[0])
-        self.blocks_multiply_const_vxx_1_0.set_k(self.w[1])
-        self.blocks_multiply_const_vxx_1_0_0.set_k(self.w[1])
-        self.blocks_multiply_const_vxx_1_0_0_0.set_k(self.w[1])
 
     def get_theta_i_gr(self):
         return self.theta_i_gr
 
     def set_theta_i_gr(self, theta_i_gr):
         self.theta_i_gr = theta_i_gr
-        self.b_antennaarraylinearz_0.set_theta_i_gr(self.theta_i_gr)
-        self.epy_block_0_1_0_0.theta = self.theta_i_gr*np.pi/180
+
+    def get_theta(self):
+        return self.theta
+
+    def set_theta(self, theta):
+        self.theta = theta
+        self.blocks_vector_source_x_0.set_data(self.theta, [])
 
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
 
     def get_phi_i_gr(self):
@@ -412,7 +227,6 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
 
     def set_Rmax(self, Rmax):
         self.Rmax = Rmax
-        self.epy_block_0_1_0_0.Rmax = self.Rmax
 
     def get_Resol_angular_gr(self):
         return self.Resol_angular_gr
@@ -431,7 +245,6 @@ class antennas_array_gnuradio_demo(gr.top_block, Qt.QWidget):
 
     def set_Dz(self, Dz):
         self.Dz = Dz
-        self.b_antennaarraylinearz_0.set_Dz(self.Dz)
 
 
 
