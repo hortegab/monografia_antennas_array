@@ -296,7 +296,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 142]
+    coordinate: [23, 142]
     rotation: 0
     state: enabled
 - name: blocks_vector_source_x_0_0
@@ -448,7 +448,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [386, 720]
+    coordinate: [392, 576]
     rotation: 0
     state: disabled
 - name: epy_block_0_1_0_0_0
@@ -731,7 +731,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [41, 739]
+    coordinate: [47, 595]
     rotation: 0
     state: disabled
 - name: virtual_source_1_0
@@ -744,7 +744,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 785]
+    coordinate: [46, 641]
     rotation: 0
     state: disabled
 
