@@ -85,9 +85,9 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.theta_apuntar_gr = theta_apuntar_gr = 45
         self.posiciones = posiciones = D*np.array([(x,y,0) for x in range(Nx) for y in range(Ny)])
         self.phi_apuntar_gr = phi_apuntar_gr = 45
-        self.N = N = Nx*Ny
-        self.w_magnitudes = w_magnitudes = np.array([1]*N)
+        self.w_magnitudes = w_magnitudes = antenna_tools.amplitudCosElev(posiciones)
         self.w_fases = w_fases = antenna_tools.calcularFasesApuntamiento(phi_apuntar_gr*np.pi/180,theta_apuntar_gr*np.pi/180, posiciones)
+        self.N = N = Nx*Ny
         self.samp_rate = samp_rate = 32000
         self.po = po = ruta3d.receiver_path(128)
         self.patrones = patrones = None
@@ -207,6 +207,7 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
         self.epy_block_0.posiciones = self.posiciones
         self.epy_block_0_1_0_0_0.posiciones = self.posiciones
+        self.set_w_magnitudes(antenna_tools.amplitudCosElev(self.posiciones))
 
     def get_phi_apuntar_gr(self):
         return self.phi_apuntar_gr
@@ -214,14 +215,6 @@ class arraygeneral(gr.top_block, Qt.QWidget):
     def set_phi_apuntar_gr(self, phi_apuntar_gr):
         self.phi_apuntar_gr = phi_apuntar_gr
         self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
-
-    def get_N(self):
-        return self.N
-
-    def set_N(self, N):
-        self.N = N
-        self.set_Rmax(self.N)
-        self.set_w_magnitudes(np.array([1]*self.N))
 
     def get_w_magnitudes(self):
         return self.w_magnitudes
@@ -236,6 +229,13 @@ class arraygeneral(gr.top_block, Qt.QWidget):
     def set_w_fases(self, w_fases):
         self.w_fases = w_fases
         self.set_excitaciones(self.w_magnitudes*np.exp(1j*self.w_fases))
+
+    def get_N(self):
+        return self.N
+
+    def set_N(self, N):
+        self.N = N
+        self.set_Rmax(self.N)
 
     def get_samp_rate(self):
         return self.samp_rate

@@ -224,6 +224,18 @@ blocks:
     bus_structure: null
     coordinate: [831, 257]
     rotation: 0
+    state: disabled
+- name: w_magnitudes
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.amplitudCosElev(posiciones)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [714, 262]
+    rotation: 0
     state: enabled
 - name: analog_const_source_x_0
   id: analog_const_source_x
