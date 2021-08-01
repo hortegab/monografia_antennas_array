@@ -98,9 +98,12 @@ def patronMonopoloCuartoOnda():
     return self.patron
     
 ## pruebas
-pp=patronMonopoloCuartoOnda
-print("Ej1, pp=", pp(np.pi/4,np.pi/8))
-#print("Ej1, pp=", pp(np.pi/4))
+#xxxx=25pytho
+#pmco=patronMonopoloCuartoOnda()
+def pmcoka(phi,theta):
+    pmcoi=patronMonopoloCuartoOnda()
+    p=pmcoi(phi,theta)
+    return p
 ##################################################################
 ##   Varias configuraciones de posiciones para arreglos         ##
 ##################################################################

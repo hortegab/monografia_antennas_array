@@ -32,16 +32,28 @@ options:
     state: enabled
 
 blocks:
-- name: Rmax
+- name: N
   id: variable
   parameters:
     comment: ''
-    value: len(posiciones)/2
+    value: len(posiciones)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1259, 61]
+    coordinate: [958, 183]
+    rotation: 0
+    state: enabled
+- name: Rmax
+  id: variable
+  parameters:
+    comment: ''
+    value: N
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 95]
     rotation: 0
     state: enabled
 - name: excitaciones
@@ -56,30 +68,18 @@ blocks:
     coordinate: [1317, 260]
     rotation: 0
     state: enabled
-- name: patrones
+- name: patron
   id: variable
   parameters:
     comment: ''
-    value: '[antenna_tools.patronDipoloMediaOnda]'
+    value: np.array([1]*po.L_path)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1013, 318]
+    coordinate: [946, 322]
     rotation: 0
-    state: disabled
-- name: patrones
-  id: variable
-  parameters:
-    comment: ''
-    value: '[antenna_tools.patronMonopoloCuartoOnda]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1016, 381]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: phi_apuntar_gr
   id: variable
   parameters:
@@ -113,7 +113,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1315, 132]
+    coordinate: [994, 95]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -125,7 +125,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1135, 121]
+    coordinate: [977, 106]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -144,24 +144,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: antenna_tools.posiciones_arreglo_linealz(4,0.4)
+    value: antenna_tools.posiciones_arreglo_sat()
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [882, 129]
-    rotation: 0
-    state: enabled
-- name: pp
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1023, 441]
+    coordinate: [952, 124]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -173,14 +161,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [183, 8]
+    coordinate: [180, 6]
     rotation: 0
     state: enabled
 - name: theta_apuntar_gr
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '45'
   states:
     bus_sink: false
     bus_source: false
@@ -210,19 +198,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 258]
-    rotation: 0
-    state: disabled
-- name: w_magnitudes
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.amplitudCosElev(posiciones)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [891, 263]
+    coordinate: [946, 258]
     rotation: 0
     state: enabled
 - name: analog_const_source_x_0
@@ -320,7 +296,13 @@ blocks:
       \ for x in range(Nx) for y in range(Ny)])\n\ndef posiciones_arreglo_cilindro(Nx,Ny,D):\n\
       \    cx = (Nx-1)/2\n    return D*np.array([(x,y,np.sqrt(2*cx**2-(x-cx)**2))\
       \ for x in range(Nx) for y in range(Ny)])\n\ndef posiciones_arreglo_linealz(Nz,Dz):\n\
-      \    return Dz*np.array([(0,0,z) for z in range(Nz)])    \n"
+      \    return Dz*np.array([(0,0,z) for z in range(Nz)])\ndef posiciones_arreglo_sat():\n\
+      \    # Todas las distancias estan en lambdas\n    # Bl el largo del panel solar\n\
+      \    # Ba el ancho del panel solar\n    # D distancia entre radiadores de la\
+      \ parte basica\n    Bl=3\n    Ba=1\n    antena11=np.array([Ba/2, Bl,0])\n  \
+      \  antena12=np.array([-Ba/2, Bl,0])\n    antena13=np.array([Ba/2, Bl-Ba,0])\n\
+      \    antena14=np.array([-Ba/2, Bl-Ba,0])\n    arreglo1=np.array([antena11,antena12,antena13,antena14])\n\
+      \    return arreglo1    \n"
   states:
     bus_sink: false
     bus_source: false
@@ -396,7 +378,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [676, 136]
+    coordinate: [668, 153]
     rotation: 0
     state: enabled
 - name: blocks_vector_source_x_0
@@ -450,13 +432,13 @@ blocks:
     repeat: 'False'
     tags: '[]'
     type: complex
-    vector: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
+    vector: patron
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [239, 266]
+    coordinate: [297, 241]
     rotation: 0
     state: enabled
 - name: blocks_vector_to_stream_0
@@ -571,41 +553,6 @@ blocks:
     coordinate: [299, 109]
     rotation: 0
     state: true
-- name: epy_block_0_0
-  id: epy_block
-  parameters:
-    _source_code: "\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\
-      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
-      \"Hecho por Homero Ortega Boada con la tutoria y de Fernando Alberto Miranda\
-      \ Binomi.\n   Ajuste de patron. Es un complemento al bloque e_array_iso_cc poder\
-      \ considerar el patron que puede tenen tener los radiadores de un arreglo. Pero\
-      \ este ajuste se limita al caso en que todos los radiadores del arreglo tienen\
-      \ el mismo patron\n     \"\"\"\n\n    def __init__(self, patron=1):  \n    \
-      \    gr.sync_block.__init__(\n            self,\n            name='e_array_ajuste_x_paton_cc',\
-      \   \n            in_sig=[np.complex64, np.float32],\n            out_sig=[np.complex64]\n\
-      \        )\n        self.patron = patron\n      \n    def work(self, input_items,\
-      \ output_items):\n        s=input_items[0]\n        patron=input_items[0]\n\
-      \        e=output_items[0]        \n        e[:] = s*self.patron\n        return\
-      \ len(output_items[0])\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    patron: pp
-  states:
-    _io_cache: ('e_array_ajuste_x_paton_cc', 'blk', [('patron', '1')], [('0', 'complex',
-      1), ('1', 'float', 1)], [('0', 'complex', 1)], 'Hecho por Homero Ortega Boada
-      con la tutoria y de Fernando Alberto Miranda Binomi.\n   Ajuste de patron. Es
-      un complemento al bloque e_array_iso_cc poder considerar el patron que puede
-      tenen tener los radiadores de un arreglo. Pero este ajuste se limita al caso
-      en que todos los radiadores del arreglo tienen el mismo patron\n     ', ['patron'])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1144, 531]
-    rotation: 0
-    state: disabled
 - name: epy_block_0_1_0_0_0
   id: epy_block
   parameters:
@@ -746,6 +693,21 @@ blocks:
     coordinate: [619, 13]
     rotation: 0
     state: true
+- name: note_0
+  id: note
+  parameters:
+    alias: ''
+    comment: ''
+    note: AQUI LO QUE HEMOS HECHO ES CONFIGURAR EL SISTEMA CON LOS MISMOS PARAMETROS
+      QUE APARECEN EN EL JUPYTER DEL PROFE (Patron_arreglo_v5 > ejemplo de arreglo
+      lineal). Solo para asegurarnos que nuestro sistema funciona igual al del profe
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [833, 9]
+    rotation: 0
+    state: true
 - name: qtgui_number_sink_0
   id: qtgui_number_sink
   parameters:
@@ -858,7 +820,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 298]
+    coordinate: [818, 280]
     rotation: 270
     state: true
 - name: virtual_source_0

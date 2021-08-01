@@ -41,7 +41,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1259, 61]
+    coordinate: [1232, 95]
     rotation: 0
     state: enabled
 - name: excitaciones
@@ -55,31 +55,31 @@ blocks:
     bus_structure: null
     coordinate: [1317, 260]
     rotation: 0
+    state: disabled
+- name: excitaciones
+  id: variable
+  parameters:
+    comment: ''
+    value: np.exp(1j*w_fases)*(excitaciones0 / np.linalg.norm(excitaciones0))*excitaciones0.size**.5
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1184, 353]
+    rotation: 0
     state: enabled
-- name: patrones
+- name: excitaciones0
   id: variable
   parameters:
     comment: ''
-    value: '[antenna_tools.patronDipoloMediaOnda]'
+    value: 1.618**(-np.array([0,1,2,3]))
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1013, 318]
+    coordinate: [957, 352]
     rotation: 0
-    state: disabled
-- name: patrones
-  id: variable
-  parameters:
-    comment: ''
-    value: '[antenna_tools.patronMonopoloCuartoOnda]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1016, 381]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: phi_apuntar_gr
   id: variable
   parameters:
@@ -113,7 +113,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1315, 132]
+    coordinate: [994, 95]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -125,7 +125,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1135, 121]
+    coordinate: [977, 106]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -144,24 +144,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: antenna_tools.posiciones_arreglo_linealz(4,0.4)
+    value: antenna_tools.posiciones_arreglo_linealz(4,0.6)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [882, 129]
-    rotation: 0
-    state: enabled
-- name: pp
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1023, 441]
+    coordinate: [952, 124]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -180,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '120'
   states:
     bus_sink: false
     bus_source: false
@@ -210,7 +198,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 258]
+    coordinate: [976, 256]
     rotation: 0
     state: disabled
 - name: w_magnitudes
@@ -222,7 +210,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [891, 263]
+    coordinate: [929, 265]
     rotation: 0
     state: enabled
 - name: analog_const_source_x_0
@@ -396,7 +384,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [676, 136]
+    coordinate: [668, 153]
     rotation: 0
     state: enabled
 - name: blocks_vector_source_x_0
@@ -450,13 +438,13 @@ blocks:
     repeat: 'False'
     tags: '[]'
     type: complex
-    vector: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
+    vector: antenna_tools.patronDipoloMediaOnda()(po.phi_path(), po.theta_path())
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [239, 266]
+    coordinate: [297, 241]
     rotation: 0
     state: enabled
 - name: blocks_vector_to_stream_0
@@ -571,41 +559,6 @@ blocks:
     coordinate: [299, 109]
     rotation: 0
     state: true
-- name: epy_block_0_0
-  id: epy_block
-  parameters:
-    _source_code: "\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\
-      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
-      \"Hecho por Homero Ortega Boada con la tutoria y de Fernando Alberto Miranda\
-      \ Binomi.\n   Ajuste de patron. Es un complemento al bloque e_array_iso_cc poder\
-      \ considerar el patron que puede tenen tener los radiadores de un arreglo. Pero\
-      \ este ajuste se limita al caso en que todos los radiadores del arreglo tienen\
-      \ el mismo patron\n     \"\"\"\n\n    def __init__(self, patron=1):  \n    \
-      \    gr.sync_block.__init__(\n            self,\n            name='e_array_ajuste_x_paton_cc',\
-      \   \n            in_sig=[np.complex64, np.float32],\n            out_sig=[np.complex64]\n\
-      \        )\n        self.patron = patron\n      \n    def work(self, input_items,\
-      \ output_items):\n        s=input_items[0]\n        patron=input_items[0]\n\
-      \        e=output_items[0]        \n        e[:] = s*self.patron\n        return\
-      \ len(output_items[0])\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    patron: pp
-  states:
-    _io_cache: ('e_array_ajuste_x_paton_cc', 'blk', [('patron', '1')], [('0', 'complex',
-      1), ('1', 'float', 1)], [('0', 'complex', 1)], 'Hecho por Homero Ortega Boada
-      con la tutoria y de Fernando Alberto Miranda Binomi.\n   Ajuste de patron. Es
-      un complemento al bloque e_array_iso_cc poder considerar el patron que puede
-      tenen tener los radiadores de un arreglo. Pero este ajuste se limita al caso
-      en que todos los radiadores del arreglo tienen el mismo patron\n     ', ['patron'])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1144, 531]
-    rotation: 0
-    state: disabled
 - name: epy_block_0_1_0_0_0
   id: epy_block
   parameters:
@@ -858,7 +811,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 298]
+    coordinate: [818, 280]
     rotation: 270
     state: true
 - name: virtual_source_0

@@ -35,7 +35,6 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import antenna_tools  # embedded python module
 import epy_block_0
-import epy_block_0_0
 import epy_block_0_1_0_0_0
 import numpy as np
 import ruta3d  # embedded python module
@@ -80,17 +79,17 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_full(2,2,0.5)
         self.theta_apuntar_gr = theta_apuntar_gr = 0
-        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_linealz(4,0.4)
         self.phi_apuntar_gr = phi_apuntar_gr = 0
-        self.w_magnitudes = w_magnitudes = antenna_tools.amplitudCosElev(posiciones)
+        self.N = N = len(posiciones)
+        self.w_magnitudes = w_magnitudes = np.array([1]*N)
         self.w_fases = w_fases = antenna_tools.calcularFasesApuntamiento(phi_apuntar_gr*np.pi/180,theta_apuntar_gr*np.pi/180, posiciones)
-        self.pp = pp = antenna_tools.patronMonopoloCuartoOnda
-        self.samp_rate = samp_rate = 32000
-        self.prueba = prueba = pp(np.pi/2, np.pi/4)
         self.po = po = ruta3d.receiver_path(128)
+        self.samp_rate = samp_rate = 32000
+        self.patron = patron = np.array([1]*po.L_path)
         self.excitaciones = excitaciones = w_magnitudes*np.exp(1j*w_fases)
-        self.Rmax = Rmax = len(posiciones)/2
+        self.Rmax = Rmax = N
 
         ##################################################
         # Blocks
@@ -134,13 +133,14 @@ class arraygeneral(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.epy_block_0_1_0_0_0 = epy_block_0_1_0_0_0.polar_graf_f(samp_rate=samp_rate, phi=po.phi, theta=po.theta, posiciones=posiciones, excitaciones=excitaciones)
         self.epy_block_0_1_0_0_0.set_block_alias("3d_f")
-        self.epy_block_0_0 = epy_block_0_0.blk(patron=1)
         self.epy_block_0 = epy_block_0.blk(posiciones=posiciones, excitaciones=excitaciones)
         self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, po.L_path)
+        self.blocks_vector_source_x_0_1 = blocks.vector_source_c(patron, False, 1, [])
         self.blocks_vector_source_x_0_0 = blocks.vector_source_f(po.theta_path(), False, 1, [])
         self.blocks_vector_source_x_0 = blocks.vector_source_f(po.phi_path(), False, 1, [])
         self.blocks_throttle_0_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_float*1, po.L_path)
+        self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
         self.analog_const_source_x_0 = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 1)
 
@@ -151,14 +151,15 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         ##################################################
         self.connect((self.analog_const_source_x_0, 0), (self.epy_block_0, 0))
         self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_stream_to_vector_0, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_throttle_0_0_0, 0))
         self.connect((self.blocks_stream_to_vector_0, 0), (self.blocks_vector_to_stream_0, 0))
         self.connect((self.blocks_throttle_0_0_0, 0), (self.blocks_complex_to_mag_0, 0))
         self.connect((self.blocks_vector_source_x_0, 0), (self.epy_block_0, 1))
         self.connect((self.blocks_vector_source_x_0_0, 0), (self.epy_block_0, 2))
+        self.connect((self.blocks_vector_source_x_0_1, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.blocks_vector_to_stream_0, 0), (self.epy_block_0_1_0_0_0, 0))
         self.connect((self.blocks_vector_to_stream_0, 0), (self.qtgui_number_sink_0, 0))
-        self.connect((self.epy_block_0, 0), (self.epy_block_0_0, 0))
-        self.connect((self.epy_block_0_0, 0), (self.blocks_throttle_0_0_0, 0))
+        self.connect((self.epy_block_0, 0), (self.blocks_multiply_xx_0, 0))
 
 
     def closeEvent(self, event):
@@ -169,6 +170,16 @@ class arraygeneral(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_posiciones(self):
+        return self.posiciones
+
+    def set_posiciones(self, posiciones):
+        self.posiciones = posiciones
+        self.set_N(len(self.posiciones))
+        self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
+        self.epy_block_0.posiciones = self.posiciones
+        self.epy_block_0_1_0_0_0.posiciones = self.posiciones
+
     def get_theta_apuntar_gr(self):
         return self.theta_apuntar_gr
 
@@ -176,23 +187,20 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.theta_apuntar_gr = theta_apuntar_gr
         self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
 
-    def get_posiciones(self):
-        return self.posiciones
-
-    def set_posiciones(self, posiciones):
-        self.posiciones = posiciones
-        self.set_Rmax(len(self.posiciones)/2)
-        self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
-        self.set_w_magnitudes(antenna_tools.amplitudCosElev(self.posiciones))
-        self.epy_block_0.posiciones = self.posiciones
-        self.epy_block_0_1_0_0_0.posiciones = self.posiciones
-
     def get_phi_apuntar_gr(self):
         return self.phi_apuntar_gr
 
     def set_phi_apuntar_gr(self, phi_apuntar_gr):
         self.phi_apuntar_gr = phi_apuntar_gr
         self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
+
+    def get_N(self):
+        return self.N
+
+    def set_N(self, N):
+        self.N = N
+        self.set_Rmax(self.N)
+        self.set_w_magnitudes(np.array([1]*self.N))
 
     def get_w_magnitudes(self):
         return self.w_magnitudes
@@ -208,12 +216,11 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.w_fases = w_fases
         self.set_excitaciones(self.w_magnitudes*np.exp(1j*self.w_fases))
 
-    def get_pp(self):
-        return self.pp
+    def get_po(self):
+        return self.po
 
-    def set_pp(self, pp):
-        self.pp = pp
-        self.set_prueba(self.pp(np.pi/2, np.pi/4))
+    def set_po(self, po):
+        self.po = po
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -222,17 +229,12 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.blocks_throttle_0_0_0.set_sample_rate(self.samp_rate)
 
-    def get_prueba(self):
-        return self.prueba
+    def get_patron(self):
+        return self.patron
 
-    def set_prueba(self, prueba):
-        self.prueba = prueba
-
-    def get_po(self):
-        return self.po
-
-    def set_po(self, po):
-        self.po = po
+    def set_patron(self, patron):
+        self.patron = patron
+        self.blocks_vector_source_x_0_1.set_data(self.patron, [])
 
     def get_excitaciones(self):
         return self.excitaciones

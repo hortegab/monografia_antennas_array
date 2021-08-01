@@ -44,6 +44,10 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         
         ax1=fig.add_subplot(2,1,1, projection='3d')
         ax1.set_title("El Arreglo-sus elementos y alimentacion")
+        ax1.set_xlabel('x')
+        ax1.set_ylabel('y')
+        ax1.set_zlabel('z')
+
         ax2=fig.add_subplot(2,1,2, projection='3d')
         ax2.set_xlim(-Rmax,Rmax)
         ax2.set_ylim(-Rmax,Rmax)

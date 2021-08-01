@@ -1,7 +1,8 @@
 # Aqui se reunen una serie de funciones que puede ser de utilidad en la definicion o configuracion de arreglos de antenas
 
 import numpy as np
-
+import scipy.integrate as integrate
+import scipy.interpolate as interp
 ###############################################################################
 ##     Funciones utiles para el direcionamiento del patron del arreglo       ##
 ###############################################################################
@@ -95,6 +96,10 @@ def patronMonopoloCuartoOnda():
         self.patron = patron
     return self.patron
 
+#def pmcoka(phi,theta):
+#    pmcoi=patronMonopoloCuartoOnda()
+#    p=pmcoi(phi,theta)
+#    return p
 ##################################################################
 ##   Varias configuraciones de posiciones para arreglos         ##
 ##################################################################
@@ -118,4 +123,54 @@ def posiciones_arreglo_cilindro(Nx,Ny,D):
     return D*np.array([(x,y,np.sqrt(2*cx**2-(x-cx)**2)) for x in range(Nx) for y in range(Ny)])
 
 def posiciones_arreglo_linealz(Nz,Dz):
-    return Dz*np.array([(0,0,z) for z in range(Nz)])    
+    return Dz*np.array([(0,0,z) for z in range(Nz)])
+def posiciones_arreglo_sat_viejo():
+    # Todas las distancias estan en lambdas
+    # Bl el largo del panel solar
+    # Ba el ancho del panel solar
+    # D distancia entre radiadores de la parte basica
+    Bl=3
+    Ba=1
+    antena11=np.array([Ba/2, Bl,0])
+    antena12=np.array([-Ba/2, Bl,0])
+    antena13=np.array([Ba/2, Bl-Ba,0])
+    antena14=np.array([-Ba/2, Bl-Ba,0])
+    arreglo1=np.array([antena11,antena12,antena13,antena14])
+    return arreglo1    
+
+
+def posiciones_arreglo_sat_ladoyp(Nx,Ny,D):
+    # radiadores en el eje y parte positiva
+    a1=posiciones_arreglo_planar(Nx,Ny,D)
+    # lo siguiente es para correr el array del centro para despejar el
+    # espacio que ocupa el cubo del satelite
+    a1=a1+np.array([-D/2,1.5*D,0])
+    return a1    
+
+def posiciones_arreglo_sat_ladoydoble(Nx,Nypos,D):
+    # radiadores en el eje y a ambos lados
+    # Nypos, es el numero de elementos solo en el lado y positivo
+    a1=posiciones_arreglo_sat_ladoyp(Nx,Nypos,D)
+    a2=a1+np.array([0,-(Nypos+2)*D,0])
+    return np.concatenate((a1,a2))
+
+def posiciones_arreglo_sat_ladoxp(Nx,Ny,D):
+    a1=posiciones_arreglo_planar(Nx,Ny,D)
+    # lo siguiente es para correr el array del centro para despejar el
+    # espacio que ocupa el cubo del satelite
+    a1=a1+np.array([1.5*D,-D/2,0])
+    return a1    
+def posiciones_arreglo_sat_ladoxdoble(Nxpos,Ny,D):
+    # radiadores en el eje y a ambos lados
+    # Nypos, es el numero de elementos solo en el lado y positivo
+    a1=posiciones_arreglo_sat_ladoxp(Nxpos,Ny,D)
+    a2=a1+np.array([-(Nxpos+2)*D,0,0])
+    return np.concatenate((a1,a2)) 
+
+def posiciones_arreglo_sat_full(Nx,Ny,D):
+   a1=posiciones_arreglo_sat_ladoydoble(Nx,Ny,D)
+   a2=posiciones_arreglo_sat_ladoxdoble(Ny,Nx,D)
+   return np.concatenate((a1,a2)) 
+   #return a1
+      
+
