@@ -23,7 +23,7 @@ Nota: Por ahora no hemos pretendido que el patron se pueda redibujar en tiempo r
 
 Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a partir de las senals que aporta la ruta, es decir, usando las mismas senales que usa el bloque e_polar_graf_3d_p_f
 """
-    def __init__(self,samp_rate=32000, Rmax=8,phi=0,theta=0, posiciones=0, excitaciones=0):
+    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0):
         gr.sync_block.__init__(self,
             name="e_antenna_graf_f",
             in_sig=[np.float32],
@@ -31,7 +31,6 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
             
         # Parametros                   
         self.Tsamp=1./samp_rate
-        self.Rmax=Rmax
         self.contador=0
         self.phi=phi
         self.theta=theta
@@ -97,6 +96,7 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         Nrings=len(self.theta)
         PHI,THETA=np.meshgrid(self.phi,self.theta)
         R=R_path.reshape(Nrings,Nang)
+        Rmax=np.max(R)
         X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)
         
         # El if  es porque el canva solo se dibuna una vez y no hemos logrado que se haga
@@ -104,7 +104,7 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         if self.contador == 0:
             self.contador=1
             # definimos el canvas por una unica vez
-            ax1,ax2=self.canvas_3d(self.Rmax)
+            ax1,ax2=self.canvas_3d(Rmax)
             # hacemos las graficas que no se repiten
             self.graficaExcitaciones(ax1)
         # Finalmente se ordena la grafica de los valores en X,Y,Z       

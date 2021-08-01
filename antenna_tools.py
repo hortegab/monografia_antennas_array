@@ -98,5 +98,24 @@ def patronMonopoloCuartoOnda():
 ##################################################################
 ##   Varias configuraciones de posiciones para arreglos         ##
 ##################################################################
-#     FALTA     FALTA
+#     Arreglo planar
+# permite obtener las posiciones para un arreglo planar
+# organizado de manera que vemos Nx filas y Ny columnas
+# de manera que hay N=Nx x Ny radiadores y todos están distanciados
+# de sus vecinos en una distand D x lambda
+# las posiciones se entregan en forma de un vector de N elementos.
 
+def posiciones_arreglo_planar(Nx,Ny, D):
+    return D*np.array([(x,y,0) for x in range(Nx) for y in range(Ny)])
+    
+def posiciones_arreglo_esferico(Nx,Ny,D):
+    cx=(Nx-1)/2
+    cy=(Ny-1)/2
+    return D*np.array([(x,y,np.sqrt(2*max(cx,cy)**2-(x-cx)**2-(y-cy)**2)) for x in range(Nx) for y in range(Ny)])
+
+def posiciones_arreglo_cilindro(Nx,Ny,D):
+    cx = (Nx-1)/2
+    return D*np.array([(x,y,np.sqrt(2*cx**2-(x-cx)**2)) for x in range(Nx) for y in range(Ny)])
+
+def posiciones_arreglo_linealz(Nz,Dz):
+    return Dz*np.array([(0,0,z) for z in range(Nz)])    
