@@ -19,7 +19,7 @@ theta: son los valores unicos usados en la grafica. Usualmente phi es un vector 
 * excitaciones: vector que contiene la alimentacion para cada uno de los componentes del arreglo
 * La senal que entra al bloque corresponde a las mediciones de campo realizadas  para todos los posibles ubicaciones angulares que se puede lograr con las combinaciones de phi y theta
 
-Nota: Por ahora no hemos pretendido que el patron se pueda redibujar en tiempo real para nuevas situaciones. Ppor ejemplo, que si en cierto momento cambia la alimentacion de los elementos de radiacion que entonces el patron se redibuje adotando la nueva forma. Si queremos lograr eso, es posible que haya que hacer unas ligeras modidificaciones a la funcione que grafica, para que, cada vez que dibuje un nuevo patron previamente borre el anterior. Quiza tambien haya que quitar el plt.show() 
+Nota: Hemos pretendido que el patron se pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que si en cierto momento cambia la alimentacion de los elementos de radiacion que entonces el patron se redibuje adotando la nueva forma. Pero tenemos un problema que nos frena y es la manera en que funcionan las graficas 3d de matplotlib. Toca buscar alternativas para lograrlo. 
 
 Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a partir de las senals que aporta la ruta, es decir, usando las mismas senales que usa el bloque e_polar_graf_3d_p_f
 """
@@ -49,9 +49,9 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         ax1.set_zlabel('z')
 
         ax2=fig.add_subplot(2,1,2, projection='3d')
-        ax2.set_xlim(-Rmax,Rmax)
-        ax2.set_ylim(-Rmax,Rmax)
-        ax2.set_zlim(-Rmax,Rmax)
+        #ax2.set_xlim(-Rmax,Rmax)
+        #ax2.set_ylim(-Rmax,Rmax)
+        #ax2.set_zlim(-Rmax,Rmax)
         ax2.set_xlabel('x')
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')

@@ -79,15 +79,15 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_full(2,2,0.5)
+        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_full(2,2,0.25)
         self.theta_apuntar_gr = theta_apuntar_gr = 0
         self.phi_apuntar_gr = phi_apuntar_gr = 0
         self.N = N = len(posiciones)
         self.w_magnitudes = w_magnitudes = np.array([1]*N)
         self.w_fases = w_fases = antenna_tools.calcularFasesApuntamiento(phi_apuntar_gr*np.pi/180,theta_apuntar_gr*np.pi/180, posiciones)
-        self.po = po = ruta3d.receiver_path(128)
+        self.po = po = ruta3d.receiver_path(256)
         self.samp_rate = samp_rate = 32000
-        self.patron = patron = np.array([1]*po.L_path)
+        self.patron = patron = antenna_tools.patron1()(po.phi_path(), po.theta_path())
         self.excitaciones = excitaciones = w_magnitudes*np.exp(1j*w_fases)
         self.Rmax = Rmax = N
 

@@ -77,43 +77,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1096, 326]
-    rotation: 0
-    state: disabled
-- name: patron
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.patronDipoloMediaOnda()(po.phi_path(), po.theta_path())
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [886, 332]
-    rotation: 0
-    state: disabled
-- name: patron
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1308, 326]
-    rotation: 0
-    state: disabled
-- name: patron
-  id: variable
-  parameters:
-    comment: ''
-    value: antenna_tools.patronDipoloCorto()(po.phi_path(), po.theta_path())
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [990, 396]
+    coordinate: [1218, 330]
     rotation: 0
     state: disabled
 - name: patron
@@ -125,7 +89,43 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1162, 399]
+    coordinate: [891, 327]
+    rotation: 0
+    state: disabled
+- name: patron
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.patronDipoloMediaOnda()(po.phi_path(), po.theta_path())
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1056, 330]
+    rotation: 0
+    state: disabled
+- name: patron
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.patronDipoloCorto()(po.phi_path(), po.theta_path())
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [892, 389]
+    rotation: 0
+    state: disabled
+- name: patron
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.patronMonopoloCuartoOnda()(po.phi_path(), po.theta_path())
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1060, 390]
     rotation: 0
     state: enabled
 - name: phi_apuntar_gr
@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: ruta3d.receiver_path(256)
+    value: ruta3d.receiver_path(128)
   states:
     bus_sink: false
     bus_source: false
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: antenna_tools.posiciones_arreglo_sat_full(2,2,0.25)
+    value: np.array([[0,0,0]])
   states:
     bus_sink: false
     bus_source: false
@@ -221,7 +221,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1243, 197]
+    coordinate: [1243, 198]
     rotation: 0
     state: enabled
 - name: w_fases
@@ -249,23 +249,6 @@ blocks:
     coordinate: [946, 258]
     rotation: 0
     state: enabled
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: complex
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [20, 94]
-    rotation: 0
-    state: true
 - name: antenna_tools
   id: epy_module
   parameters:
@@ -391,24 +374,6 @@ blocks:
     coordinate: [130, 370]
     rotation: 0
     state: enabled
-- name: blocks_multiply_xx_0
-  id: blocks_multiply_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_inputs: '2'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [546, 142]
-    rotation: 0
-    state: true
 - name: blocks_stream_to_vector_0
   id: blocks_stream_to_vector
   parameters:
@@ -446,46 +411,6 @@ blocks:
     coordinate: [668, 153]
     rotation: 0
     state: enabled
-- name: blocks_vector_source_x_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'False'
-    tags: '[]'
-    type: float
-    vector: po.phi_path()
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 170]
-    rotation: 0
-    state: enabled
-- name: blocks_vector_source_x_0_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'False'
-    tags: '[]'
-    type: float
-    vector: po.theta_path()
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [14, 248]
-    rotation: 0
-    state: enabled
 - name: blocks_vector_source_x_0_1
   id: blocks_vector_source_x
   parameters:
@@ -494,7 +419,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    repeat: 'False'
+    repeat: 'True'
     tags: '[]'
     type: complex
     vector: patron
@@ -503,7 +428,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [297, 241]
+    coordinate: [294, 142]
     rotation: 0
     state: enabled
 - name: blocks_vector_to_stream_0
@@ -524,100 +449,6 @@ blocks:
     coordinate: [388, 371]
     rotation: 0
     state: true
-- name: epy_block_0
-  id: epy_block
-  parameters:
-    _source_code: "\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\
-      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
-      \"Hecho por Homero Ortega Boada con la tutoria y de Fernando Alberto Miranda\
-      \ Binomi.\n   Arreglo tridimensional de fuentes puntuales con radiadores isotropicos.\n\
-      \n   Parametros y senales:\n   * Por In0 entra la envolvente compleja de la\
-      \ senal a ser transmitida.\n   * Por In1 y In2 llega la posicion actual del\
-      \ receptor en coordenadas esfericas. In1 para phi, In2 para theta\n   * La salida\
-      \ es la senal que entra por In0 pero afectada por su paso atraves del arreglo\n\
-      \   * posiciones: es un vector de longitud N, el cual contiene las posiciones\
-      \ en el espacio 3d de los N radiadores que componen el arreglo. Solo hay que\
-      \ tener en cuenta que cada posicion consta de 3 elementos que representan las\
-      \ coordenadas x,y,x. Por eso, desde el punto de vista de todos los datos, \"\
-      posiciones\" es una matrix N x 3\n   * excitaciones: Es el vector de longitud\
-      \ N que contiene las exitaciones para cada uno de los N radiadores. Usualmente\
-      \ esos valores son coplejos, donde la magnitud impacta a la apertura del arreglo,\
-      \ mientras que las fases impactan la direccionalidad del patron. Si no se desea\
-      \ impactar nada de eso, las excitaciones puede ser un vector de puros unos.\n\
-      \   \n   Nota: es posible usar este bloque para obtener el patron del arreglo\
-      \ teniendo en cuenta lo siguiente:\n   * se senal en In0 puede ser igual a 1,\
-      \ pero solo para mejorar la velocidad del calculo\n   * las senales In1, In2\
-      \ deben representar la ruta, en angulos phi, theta, que el receptor realiza,\
-      \ como si se tratara de un drone que va volando al rededor del arreglo mientras\
-      \ mide el campo, hasta cubrir todos esos angulos.   \n   \n   Nota para disenadores:\
-      \ este bloque es una evolucion del bloque e_array_general_cc con el fin de lograr\
-      \ soluciones mas modulares y mas sencillas, de manera mas acorde con la vision\
-      \ de GNU Radio. La simplicidad se logron teniendo en cuenta que hay varias cosas\
-      \ que pueden ser realizadas por otros bloques externos, entres esas cosas estan:\n\
-      \   * En la practica los radiadores son casi siempre de patron similar, En ese\
-      \ caso, un bloque externo puede hacer el ajuste correspondiente para considerar\
-      \ la forma de ese patron.\n   * La directividad y la densidad de potencia. Son\
-      \ parametros que son mas del interes de un sistema de medicion que de un sistema\
-      \ de tiempo real.  \n    \"\"\"\n\n    def __init__(self, posiciones=0,excitaciones=1):\
-      \  \n        gr.sync_block.__init__(\n            self,\n            name='e_array_iso_cc',\
-      \   \n            in_sig=[np.complex64, np.float32, np.float32],\n         \
-      \   out_sig=[np.complex64]\n        )\n        self.posiciones = posiciones\n\
-      \        self.excitaciones = excitaciones\n        \n    def _campo_dirUnica(self,phi_i,theta_i):\n\
-      \        # normal es el vector que aparece en formula Maillou que senala la\
-      \ direccion de observacion\n        normal = np.array((np.cos(phi_i)*np.sin(theta_i),np.sin(phi_i)*np.sin(theta_i),np.cos(theta_i)))\n\
-      \        # @ es para que se surta el producto matricial porque el uso de * seria\
-      \ un producto punto o escalar\n        fases = 2*np.pi*self.posiciones@normal\n\
-      \        return sum(self.excitaciones*np.exp(1j*fases))\n \n    def campo(self,phi,theta):\n\
-      \        campo_vec = np.vectorize(self._campo_dirUnica)\n        return campo_vec(phi,theta)\n\
-      \        \n    def work(self, input_items, output_items):\n        s=input_items[0]\n\
-      \        theta=input_items[2]\n        phi=input_items[1]\n        e=output_items[0]\n\
-      \        e[:]=self.campo(phi,theta)\n        return len(output_items[0])\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    excitaciones: excitaciones
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    posiciones: posiciones
-  states:
-    _io_cache: '(''e_array_iso_cc'', ''blk'', [(''posiciones'', ''0''), (''excitaciones'',
-      ''1'')], [(''0'', ''complex'', 1), (''1'', ''float'', 1), (''2'', ''float'',
-      1)], [(''0'', ''complex'', 1)], ''Hecho por Homero Ortega Boada con la tutoria
-      y de Fernando Alberto Miranda Binomi.\n   Arreglo tridimensional de fuentes
-      puntuales con radiadores isotropicos.\n\n   Parametros y senales:\n   * Por
-      In0 entra la envolvente compleja de la senal a ser transmitida.\n   * Por In1
-      y In2 llega la posicion actual del receptor en coordenadas esfericas. In1 para
-      phi, In2 para theta\n   * La salida es la senal que entra por In0 pero afectada
-      por su paso atraves del arreglo\n   * posiciones: es un vector de longitud N,
-      el cual contiene las posiciones en el espacio 3d de los N radiadores que componen
-      el arreglo. Solo hay que tener en cuenta que cada posicion consta de 3 elementos
-      que representan las coordenadas x,y,x. Por eso, desde el punto de vista de todos
-      los datos, "posiciones" es una matrix N x 3\n   * excitaciones: Es el vector
-      de longitud N que contiene las exitaciones para cada uno de los N radiadores.
-      Usualmente esos valores son coplejos, donde la magnitud impacta a la apertura
-      del arreglo, mientras que las fases impactan la direccionalidad del patron.
-      Si no se desea impactar nada de eso, las excitaciones puede ser un vector de
-      puros unos.\n   \n   Nota: es posible usar este bloque para obtener el patron
-      del arreglo teniendo en cuenta lo siguiente:\n   * se senal en In0 puede ser
-      igual a 1, pero solo para mejorar la velocidad del calculo\n   * las senales
-      In1, In2 deben representar la ruta, en angulos phi, theta, que el receptor realiza,
-      como si se tratara de un drone que va volando al rededor del arreglo mientras
-      mide el campo, hasta cubrir todos esos angulos.   \n   \n   Nota para disenadores:
-      este bloque es una evolucion del bloque e_array_general_cc con el fin de lograr
-      soluciones mas modulares y mas sencillas, de manera mas acorde con la vision
-      de GNU Radio. La simplicidad se logron teniendo en cuenta que hay varias cosas
-      que pueden ser realizadas por otros bloques externos, entres esas cosas estan:\n   *
-      En la practica los radiadores son casi siempre de patron similar, En ese caso,
-      un bloque externo puede hacer el ajuste correspondiente para considerar la forma
-      de ese patron.\n   * La directividad y la densidad de potencia. Son parametros
-      que son mas del interes de un sistema de medicion que de un sistema de tiempo
-      real.  \n    '', [''excitaciones'', ''posiciones''])'
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [285, 128]
-    rotation: 0
-    state: enabled
 - name: epy_block_0_1_0_0_0
   id: epy_block
   parameters:
@@ -887,17 +718,12 @@ blocks:
     state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', epy_block_0, '0']
 - [blocks_complex_to_mag_0, '0', blocks_stream_to_vector_0, '0']
-- [blocks_multiply_xx_0, '0', blocks_throttle_0_0_0, '0']
 - [blocks_stream_to_vector_0, '0', blocks_vector_to_stream_0, '0']
 - [blocks_throttle_0_0_0, '0', virtual_sink_0, '0']
-- [blocks_vector_source_x_0, '0', epy_block_0, '1']
-- [blocks_vector_source_x_0_0, '0', epy_block_0, '2']
-- [blocks_vector_source_x_0_1, '0', blocks_multiply_xx_0, '1']
+- [blocks_vector_source_x_0_1, '0', blocks_throttle_0_0_0, '0']
 - [blocks_vector_to_stream_0, '0', epy_block_0_1_0_0_0, '0']
 - [blocks_vector_to_stream_0, '0', qtgui_number_sink_0, '0']
-- [epy_block_0, '0', blocks_multiply_xx_0, '0']
 - [virtual_source_0, '0', blocks_complex_to_mag_0, '0']
 
 metadata:
