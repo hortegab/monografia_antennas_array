@@ -20,21 +20,19 @@ if __name__ == '__main__':
         except:
             print("Warning: failed to XInitThreads()")
 
-from PyQt5 import Qt
-from gnuradio import qtgui
-import sip
-from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
+from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
+from gnuradio.qtgui import Range, RangeWidget
+from PyQt5 import QtCore
 import antenna_tools  # embedded python module
-import epy_block_0
 import epy_block_0_1_0_0_0
 import numpy as np
 import ruta3d  # embedded python module
@@ -79,87 +77,46 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_full(2,2,0.25)
+        self.posiciones = posiciones = np.array([[0,0,0]])
         self.theta_apuntar_gr = theta_apuntar_gr = 0
         self.phi_apuntar_gr = phi_apuntar_gr = 0
         self.N = N = len(posiciones)
         self.w_magnitudes = w_magnitudes = np.array([1]*N)
         self.w_fases = w_fases = antenna_tools.calcularFasesApuntamiento(phi_apuntar_gr*np.pi/180,theta_apuntar_gr*np.pi/180, posiciones)
-        self.po = po = ruta3d.receiver_path(256)
+        self.po = po = ruta3d.receiver_path(128)
         self.samp_rate = samp_rate = 32000
-        self.patron = patron = antenna_tools.patron1()(po.phi_path(), po.theta_path())
+        self.patron = patron = antenna_tools.patronDipoloMediaOnda()(po.phi_path(), po.theta_path())
         self.excitaciones = excitaciones = w_magnitudes*np.exp(1j*w_fases)
         self.Rmax = Rmax = N
+        self.L_theta = L_theta = len(po.theta)
+        self.L_phi = L_phi = len(po.phi)
+        self.L_path = L_path = po.L_path
+        self.Ka = Ka = 1
 
         ##################################################
         # Blocks
         ##################################################
-        self.qtgui_number_sink_0 = qtgui.number_sink(
-            gr.sizeof_float,
-            0,
-            qtgui.NUM_GRAPH_HORIZ,
-            1,
-            None # parent
-        )
-        self.qtgui_number_sink_0.set_update_time(0.10)
-        self.qtgui_number_sink_0.set_title("Campo E")
-
-        labels = ['Campo E', '', '', '', '',
-            '', '', '', '', '']
-        units = ['', '', '', '', '',
-            '', '', '', '', '']
-        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
-            ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
-        factor = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-
-        for i in range(1):
-            self.qtgui_number_sink_0.set_min(i, 0)
-            self.qtgui_number_sink_0.set_max(i, Rmax)
-            self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
-            if len(labels[i]) == 0:
-                self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_number_sink_0.set_label(i, labels[i])
-            self.qtgui_number_sink_0.set_unit(i, units[i])
-            self.qtgui_number_sink_0.set_factor(i, factor[i])
-
-        self.qtgui_number_sink_0.enable_autoscale(False)
-        self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_number_sink_0_win, 2, 0, 1, 1)
-        for r in range(2, 3):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.epy_block_0_1_0_0_0 = epy_block_0_1_0_0_0.polar_graf_f(samp_rate=samp_rate, phi=po.phi, theta=po.theta, posiciones=posiciones, excitaciones=excitaciones)
+        self._Ka_range = Range(1, 20, 1, 1, 200)
+        self._Ka_win = RangeWidget(self._Ka_range, self.set_Ka, 'amplificar', "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._Ka_win)
+        self.epy_block_0_1_0_0_0 = epy_block_0_1_0_0_0.polar_graf_f(samp_rate=samp_rate, phi=po.phi, theta=po.theta, posiciones=posiciones, excitaciones=excitaciones, L_path=L_path)
         self.epy_block_0_1_0_0_0.set_block_alias("3d_f")
-        self.epy_block_0 = epy_block_0.blk(posiciones=posiciones, excitaciones=excitaciones)
-        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, po.L_path)
-        self.blocks_vector_source_x_0_1 = blocks.vector_source_c(patron, False, 1, [])
-        self.blocks_vector_source_x_0_0 = blocks.vector_source_f(po.theta_path(), False, 1, [])
-        self.blocks_vector_source_x_0 = blocks.vector_source_f(po.phi_path(), False, 1, [])
+        self.blocks_vector_source_x_0_1 = blocks.vector_source_c(patron, True, 1, [])
         self.blocks_throttle_0_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_float*1, po.L_path)
-        self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
+        self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_float*1, L_path)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(Ka)
         self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
-        self.analog_const_source_x_0 = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_const_source_x_0, 0), (self.epy_block_0, 0))
         self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_stream_to_vector_0, 0))
-        self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_throttle_0_0_0, 0))
-        self.connect((self.blocks_stream_to_vector_0, 0), (self.blocks_vector_to_stream_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_throttle_0_0_0, 0))
+        self.connect((self.blocks_stream_to_vector_0, 0), (self.epy_block_0_1_0_0_0, 0))
         self.connect((self.blocks_throttle_0_0_0, 0), (self.blocks_complex_to_mag_0, 0))
-        self.connect((self.blocks_vector_source_x_0, 0), (self.epy_block_0, 1))
-        self.connect((self.blocks_vector_source_x_0_0, 0), (self.epy_block_0, 2))
-        self.connect((self.blocks_vector_source_x_0_1, 0), (self.blocks_multiply_xx_0, 1))
-        self.connect((self.blocks_vector_to_stream_0, 0), (self.epy_block_0_1_0_0_0, 0))
-        self.connect((self.blocks_vector_to_stream_0, 0), (self.qtgui_number_sink_0, 0))
-        self.connect((self.epy_block_0, 0), (self.blocks_multiply_xx_0, 0))
+        self.connect((self.blocks_vector_source_x_0_1, 0), (self.blocks_multiply_const_vxx_0, 0))
 
 
     def closeEvent(self, event):
@@ -177,7 +134,6 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.posiciones = posiciones
         self.set_N(len(self.posiciones))
         self.set_w_fases(antenna_tools.calcularFasesApuntamiento(self.phi_apuntar_gr*np.pi/180,self.theta_apuntar_gr*np.pi/180, self.posiciones))
-        self.epy_block_0.posiciones = self.posiciones
         self.epy_block_0_1_0_0_0.posiciones = self.posiciones
 
     def get_theta_apuntar_gr(self):
@@ -241,7 +197,6 @@ class arraygeneral(gr.top_block, Qt.QWidget):
 
     def set_excitaciones(self, excitaciones):
         self.excitaciones = excitaciones
-        self.epy_block_0.excitaciones = self.excitaciones
         self.epy_block_0_1_0_0_0.excitaciones = self.excitaciones
 
     def get_Rmax(self):
@@ -249,6 +204,32 @@ class arraygeneral(gr.top_block, Qt.QWidget):
 
     def set_Rmax(self, Rmax):
         self.Rmax = Rmax
+
+    def get_L_theta(self):
+        return self.L_theta
+
+    def set_L_theta(self, L_theta):
+        self.L_theta = L_theta
+
+    def get_L_phi(self):
+        return self.L_phi
+
+    def set_L_phi(self, L_phi):
+        self.L_phi = L_phi
+
+    def get_L_path(self):
+        return self.L_path
+
+    def set_L_path(self, L_path):
+        self.L_path = L_path
+        self.epy_block_0_1_0_0_0.L_path = self.L_path
+
+    def get_Ka(self):
+        return self.Ka
+
+    def set_Ka(self, Ka):
+        self.Ka = Ka
+        self.blocks_multiply_const_vxx_0.set_k(self.Ka)
 
 
 

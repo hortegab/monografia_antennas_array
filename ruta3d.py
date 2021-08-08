@@ -38,9 +38,11 @@ class receiver_path(object):
         self.Nrings=int(Nang/2)
         self.pasoAngular=360/Nang
         self.L_path=Nang*self.Nrings
-        self.phi=np.linspace(0,360-self.pasoAngular,Nang)*np.pi/180
-        self.theta=np.linspace(0,180-self.pasoAngular,self.Nrings)*np.pi/180
-      
+        #self.phi=np.linspace(0,360-self.pasoAngular,Nang)*np.pi/180
+        #self.theta=np.linspace(0,180-self.pasoAngular,self.Nrings)*np.pi/180
+        self.phi=np.linspace(0,360,Nang)*np.pi/180
+        self.theta=np.linspace(0,180,self.Nrings)*np.pi/180
+            
     # calculo de los valores de phi para todo el recorrido            
     def phi_path(self,):
         return(np.tile(self.phi, self.Nrings))

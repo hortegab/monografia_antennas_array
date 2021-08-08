@@ -32,6 +32,42 @@ options:
     state: enabled
 
 blocks:
+- name: L_path
+  id: variable
+  parameters:
+    comment: ''
+    value: po.L_path
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [833, 22]
+    rotation: 0
+    state: enabled
+- name: L_phi
+  id: variable
+  parameters:
+    comment: ''
+    value: len(po.phi)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [933, 25]
+    rotation: 0
+    state: enabled
+- name: L_theta
+  id: variable
+  parameters:
+    comment: ''
+    value: len(po.theta)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1003, 22]
+    rotation: 0
+    state: enabled
 - name: N
   id: variable
   parameters:
@@ -103,7 +139,7 @@ blocks:
     bus_structure: null
     coordinate: [1056, 330]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: patron
   id: variable
   parameters:
@@ -139,7 +175,7 @@ blocks:
     bus_structure: null
     coordinate: [1224, 392]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: phi_apuntar_gr
   id: variable
   parameters:
@@ -156,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: ruta3d.receiver_path(256)
+    value: ruta3d.receiver_path(128)
   states:
     bus_sink: false
     bus_source: false
@@ -259,6 +295,25 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [946, 258]
+    rotation: 0
+    state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '0.1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [563, 597]
     rotation: 0
     state: enabled
 - name: antenna_tools
@@ -388,6 +443,24 @@ blocks:
     coordinate: [706, 16]
     rotation: 0
     state: true
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [775, 544]
+    rotation: 0
+    state: enabled
 - name: blocks_complex_to_mag_0
   id: blocks_complex_to_mag
   parameters:
@@ -401,7 +474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [130, 370]
+    coordinate: [157, 368]
     rotation: 0
     state: enabled
 - name: blocks_stream_to_vector_0
@@ -412,16 +485,16 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    num_items: po.L_path
+    num_items: L_path
     type: float
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [256, 370]
+    coordinate: [312, 368]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_throttle_0_0_0
   id: blocks_throttle
   parameters:
@@ -438,7 +511,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [668, 153]
+    coordinate: [553, 153]
     rotation: 0
     state: enabled
 - name: blocks_vector_source_x_0_1
@@ -458,7 +531,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [294, 142]
+    coordinate: [293, 138]
     rotation: 0
     state: enabled
 - name: blocks_vector_to_stream_0
@@ -476,12 +549,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [388, 371]
+    coordinate: [482, 542]
     rotation: 0
-    state: true
+    state: enabled
 - name: epy_block_0_1_0_0_0
   id: epy_block
   parameters:
+    L_path: L_path
     _source_code: "from mpl_toolkits import mplot3d\nimport numpy as np\nfrom gnuradio\
       \ import gr\nimport matplotlib.pyplot as plt\n\nclass polar_graf_f(gr.sync_block):\n\
       \    \"\"\"\nHecho por Homero Ortega Boada. Universidad Industrial de Santander.\n\
@@ -504,36 +578,40 @@ blocks:
       \ que contiene la alimentacion para cada uno de los componentes del arreglo\n\
       * La senal que entra al bloque corresponde a las mediciones de campo realizadas\
       \  para todos los posibles ubicaciones angulares que se puede lograr con las\
-      \ combinaciones de phi y theta\n\nNota: Hemos pretendido que el patron se pueda\
-      \ redibujar en tiempo real para nuevas situaciones. Por ejemplo, que si en cierto\
-      \ momento cambia la alimentacion de los elementos de radiacion que entonces\
-      \ el patron se redibuje adotando la nueva forma. Pero tenemos un problema que\
-      \ nos frena y es la manera en que funcionan las graficas 3d de matplotlib. Toca\
-      \ buscar alternativas para lograrlo. \n\nRetos para mejorar: es mas natural\
+      \ combinaciones de phi y theta\n*L_path: es el numero de puntos que tiene la\
+      \ ruta. Es la longitud de la ruta\n\nNota: Hemos pretendido que el patron se\
+      \ pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que si\
+      \ en cierto momento cambia la alimentacion de los elementos de radiacion que\
+      \ entonces el patron se redibuje adotando la nueva forma. Pero tenemos un problema\
+      \ que nos frena y es la manera en que funcionan las graficas 3d de matplotlib.\
+      \ Toca buscar alternativas para lograrlo. \n\nRetos para mejorar: es mas natural\
       \ que el bloque pueda identifcar phi y theta a partir de las senals que aporta\
       \ la ruta, es decir, usando las mismas senales que usa el bloque e_polar_graf_3d_p_f\n\
-      \"\"\"\n    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0):\n\
-      \        gr.sync_block.__init__(self,\n            name=\"e_antenna_graf_f\"\
-      ,\n            in_sig=[np.float32],\n            out_sig=None)\n           \
-      \ \n        # Parametros                   \n        self.Tsamp=1./samp_rate\n\
-      \        self.contador=0\n        self.phi=phi\n        self.theta=theta\n \
-      \       self.posiciones=posiciones\n        self.excitaciones=excitaciones\n\
-      \        \n    # Canvas grafica la plantilla sobre la que se posicionara la\
-      \ grafica 3d\n    def canvas_3d(self, Rmax):\n        # Rmax: es el mayor valor\
-      \ de magnitude de campo E\n        fig=plt.figure()\n        \n        ax1=fig.add_subplot(2,1,1,\
-      \ projection='3d')\n        ax1.set_title(\"El Arreglo-sus elementos y alimentacion\"\
-      )\n        ax1.set_xlabel('x')\n        ax1.set_ylabel('y')\n        ax1.set_zlabel('z')\n\
-      \n        ax2=fig.add_subplot(2,1,2, projection='3d')\n        #ax2.set_xlim(-Rmax,Rmax)\n\
-      \        #ax2.set_ylim(-Rmax,Rmax)\n        #ax2.set_zlim(-Rmax,Rmax)\n    \
-      \    ax2.set_xlabel('x')\n        ax2.set_ylabel('y')\n        ax2.set_zlabel('z')\n\
-      \        ax2.set_title(\"Patron de radiacion del arreglo\")\n              \
-      \ \n        return ax1, ax2\n\n    # Traduccion de coordenadas esfericas a cartecianas\n\
-      \    def esferica2cartesiana(self,phi,theta,R):\n        x = R * np.cos(phi)\
-      \ * np.sin(theta)\n        y = R * np.sin(phi) * np.sin(theta)\n        z =\
-      \ R * np.cos(theta)\n        return(x,y,z)                                 \
-      \  \n\n    def graficaExcitaciones(self,ax=None):\n        \n        def sep_xyz(filas_xyz):\n\
-      \            return (filas_xyz[:,0],filas_xyz[:,1],filas_xyz[:,2])\n       \
-      \         \n        pmin=self.posiciones.min()\n        pmax=self.posiciones.max()\n\
+      \"\"\"\n    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0,\
+      \ L_path=8192):\n        gr.sync_block.__init__(self,\n            name=\"e_vector_antenna_graf_f\"\
+      ,\n            in_sig=[(np.float32,L_path)],\n            out_sig=None)\n  \
+      \          \n        # Parametros\n        self.L_path=L_path              \
+      \     \n        self.Tsamp=1./samp_rate\n        self.contador=0\n        self.phi=phi\n\
+      \        self.theta=theta\n        self.posiciones=posiciones\n        self.excitaciones=excitaciones\n\
+      \        self.fig=plt.figure()\n        self.ax2=self.fig.add_subplot(1,1,1,\
+      \ projection='3d')\n        self.ax2.set_xlabel('x')\n        self.ax2.set_ylabel('y')\n\
+      \        self.ax2.set_zlabel('z')\n        self.ax2.set_title(\"Patron de radiacion\
+      \ del arreglo\")\n        \n    # Canvas grafica la plantilla sobre la que se\
+      \ posicionara la grafica 3d\n    def canvas_3d(self, Rmax):\n        # Rmax:\
+      \ es el mayor valor de magnitude de campo E\n        fig=plt.figure()\n    \
+      \    \n        #ax1=fig.add_subplot(2,1,1, projection='3d')\n        #ax1.set_title(\"\
+      El Arreglo-sus elementos y alimentacion\")\n        #ax1.set_xlabel('x')\n \
+      \       # ax1.set_ylabel('y')\n        #ax1.set_zlabel('z')\n\n        ax2=fig.add_subplot(1,1,1,\
+      \ projection='3d')\n        #ax2.set_xlim(-Rmax,Rmax)\n        #ax2.set_ylim(-Rmax,Rmax)\n\
+      \        #ax2.set_zlim(-Rmax,Rmax)\n        ax2.set_xlabel('x')\n        ax2.set_ylabel('y')\n\
+      \        ax2.set_zlabel('z')\n        ax2.set_title(\"Patron de radiacion del\
+      \ arreglo\")\n               \n        return ax2\n\n    # Traduccion de coordenadas\
+      \ esfericas a cartecianas\n    def esferica2cartesiana(self,phi,theta,R):\n\
+      \        x = R * np.cos(phi) * np.sin(theta)\n        y = R * np.sin(phi) *\
+      \ np.sin(theta)\n        z = R * np.cos(theta)\n        return(x,y,z)      \
+      \                             \n\n    def graficaExcitaciones(self,ax=None):\n\
+      \        \n        def sep_xyz(filas_xyz):\n            return (filas_xyz[:,0],filas_xyz[:,1],filas_xyz[:,2])\n\
+      \                \n        pmin=self.posiciones.min()\n        pmax=self.posiciones.max()\n\
       \        lims = (pmin-(pmax-pmin)*.1,pmax+(pmax-pmin)*.1)\n\n        ax.plot3D(*sep_xyz(self.posiciones),'or')\n\
       \        Emax=np.abs(self.excitaciones).max()\n        if self.posiciones.shape[0]>1:\n\
       \            dmin=min((np.linalg.norm(x-y) for x in self.posiciones for y in\
@@ -544,18 +622,19 @@ blocks:
       \ se deben crear 3 matrices de NringsxNang:\n        # * PHI\n        # * THETA\n\
       \        # * R\n        # Nrings: es el numero de filasy equivale al numero\
       \ de anillos en la graf 3d\n        # Nang: es el numero de columnas y a la\
-      \ vez de puntos por cada anillo de la graf 3d\n        R_path=input_items[0]\
+      \ vez de puntos por cada anillo de la graf 3d\n        R_path=input_items[0][0]\
       \ \n        Nang=len(self.phi) \n        Nrings=len(self.theta)\n        PHI,THETA=np.meshgrid(self.phi,self.theta)\n\
       \        R=R_path.reshape(Nrings,Nang)\n        Rmax=np.max(R)\n        X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n\
-      \        \n        # El if  es porque el canva solo se dibuna una vez y no hemos\
-      \ logrado que se haga\n        # dentro del constructor.\n        if self.contador\
-      \ == 0:\n            self.contador=1\n            # definimos el canvas por\
-      \ una unica vez\n            ax1,ax2=self.canvas_3d(Rmax)\n            # hacemos\
-      \ las graficas que no se repiten\n            self.graficaExcitaciones(ax1)\n\
-      \        # Finalmente se ordena la grafica de los valores en X,Y,Z       \n\
-      \        #ax2.plot_wireframe(X,Y,Z)\n        #plt.clr()\n        ax2.plot_surface(X,Y,Z,cmap=\"\
-      coolwarm\")\n        plt.show()\n        plt.pause(self.Tsamp)\n        ax2.cla()\n\
-      \        \n        return len(input_items[0])\n"
+      \                \n        # El if  es porque el canva solo se dibuna una vez\
+      \ y no hemos logrado que se haga\n        # dentro del constructor.\n      \
+      \  \"\"\"if self.contador == 0:\n            self.contador=1\n            #\
+      \ definimos el canvas por una unica vez\n            self.ax2=self.canvas_3d(Rmax)\n\
+      \            # hacemos las graficas que no se repiten\n            #self.graficaExcitaciones(ax1)\n\
+      \        \"\"\"\n        # Finalmente se ordena la grafica de los valores en\
+      \ X,Y,Z  \n        #self.ax2=self.canvas_3d(Rmax)     \n        #ax2.plot_wireframe(X,Y,Z)\n\
+      \        #plt.clr()\n        self.ax2.cla()\n        self.ax2.plot_surface(X,Y,Z,cmap=\"\
+      coolwarm\")\n        plt.pause(self.Tsamp)\n                \n        return\
+      \ len(input_items[0])\n"
     affinity: ''
     alias: 3d_f
     comment: ''
@@ -567,42 +646,44 @@ blocks:
     samp_rate: samp_rate
     theta: po.theta
   states:
-    _io_cache: "('e_antenna_graf_f', 'polar_graf_f', [('samp_rate', '32000'), ('phi',\
-      \ '0'), ('theta', '0'), ('posiciones', '0'), ('excitaciones', '0')], [('0',\
-      \ 'float', 1)], [], '\\nHecho por Homero Ortega Boada. Universidad Industrial\
-      \ de Santander.\\nPermite mostrar las graficas m\xE1s relevantes para un arreglo\
-      \ de antenas como:\\n* La distribuci\xF3n en 3d de los componentes del arreglo\
-      \ con su respectiva alimentaci\xF3n\\n* Las alimentaciones que cada componente\
-      \ (radiador) tiene.\\n* grafica polar del patron de arreglo con coordenadas\
-      \ esfericas. Las graficas las hacemos con herramientas externas a GNU Radio\
-      \ ya que al momento no sabiamos como hacerlo de otra manera. Los parametros\
-      \ de entrada son:\\n\\n* samp_rate: es la frecuencia de muestreo en Hz que nunca\
-      \ falta en GNURadio. Influye en la velocidad de la grafica, supuestamente se\
-      \ los valores de medicion del  campo llegan con esa rata\\n* Rmax sirve para\
-      \ definir los limites de la grafica, se supone que es el m\xE1ximo valor que\
-      \ puede llegar a tomar el campo en magnitud\\n* phi: son los valores unicos\
-      \ usados en la grafica para phi. Usualmente phi es un vector de valores entre\
-      \ 0 y 2pi con un cierto paso angular\\ntheta: son los valores unicos usados\
-      \ en la grafica. Usualmente phi es un vector de valores entre 0 y pi con el\
-      \ mismo paso angular que phi. De manera que este vector tiene 2 veces menos\
-      \ valores que phi\\n* posiciones: vector que contiene la posicion de cada uno\
-      \ de los componentes del arreglo\\n* excitaciones: vector que contiene la alimentacion\
-      \ para cada uno de los componentes del arreglo\\n* La senal que entra al bloque\
-      \ corresponde a las mediciones de campo realizadas  para todos los posibles\
-      \ ubicaciones angulares que se puede lograr con las combinaciones de phi y theta\\\
-      n\\nNota: Hemos pretendido que el patron se pueda redibujar en tiempo real para\
-      \ nuevas situaciones. Por ejemplo, que si en cierto momento cambia la alimentacion\
-      \ de los elementos de radiacion que entonces el patron se redibuje adotando\
-      \ la nueva forma. Pero tenemos un problema que nos frena y es la manera en que\
-      \ funcionan las graficas 3d de matplotlib. Toca buscar alternativas para lograrlo.\
-      \ \\n\\nRetos para mejorar: es mas natural que el bloque pueda identifcar phi\
-      \ y theta a partir de las senals que aporta la ruta, es decir, usando las mismas\
-      \ senales que usa el bloque e_polar_graf_3d_p_f\\n', ['excitaciones', 'phi',\
-      \ 'posiciones', 'theta'])"
+    _io_cache: "('e_vector_antenna_graf_f', 'polar_graf_f', [('samp_rate', '32000'),\
+      \ ('phi', '0'), ('theta', '0'), ('posiciones', '0'), ('excitaciones', '0'),\
+      \ ('L_path', '8192')], [('0', 'float', 8192)], [], '\\nHecho por Homero Ortega\
+      \ Boada. Universidad Industrial de Santander.\\nPermite mostrar las graficas\
+      \ m\xE1s relevantes para un arreglo de antenas como:\\n* La distribuci\xF3n\
+      \ en 3d de los componentes del arreglo con su respectiva alimentaci\xF3n\\n*\
+      \ Las alimentaciones que cada componente (radiador) tiene.\\n* grafica polar\
+      \ del patron de arreglo con coordenadas esfericas. Las graficas las hacemos\
+      \ con herramientas externas a GNU Radio ya que al momento no sabiamos como hacerlo\
+      \ de otra manera. Los parametros de entrada son:\\n\\n* samp_rate: es la frecuencia\
+      \ de muestreo en Hz que nunca falta en GNURadio. Influye en la velocidad de\
+      \ la grafica, supuestamente se los valores de medicion del  campo llegan con\
+      \ esa rata\\n* Rmax sirve para definir los limites de la grafica, se supone\
+      \ que es el m\xE1ximo valor que puede llegar a tomar el campo en magnitud\\\
+      n* phi: son los valores unicos usados en la grafica para phi. Usualmente phi\
+      \ es un vector de valores entre 0 y 2pi con un cierto paso angular\\ntheta:\
+      \ son los valores unicos usados en la grafica. Usualmente phi es un vector de\
+      \ valores entre 0 y pi con el mismo paso angular que phi. De manera que este\
+      \ vector tiene 2 veces menos valores que phi\\n* posiciones: vector que contiene\
+      \ la posicion de cada uno de los componentes del arreglo\\n* excitaciones: vector\
+      \ que contiene la alimentacion para cada uno de los componentes del arreglo\\\
+      n* La senal que entra al bloque corresponde a las mediciones de campo realizadas\
+      \  para todos los posibles ubicaciones angulares que se puede lograr con las\
+      \ combinaciones de phi y theta\\n*L_path: es el numero de puntos que tiene la\
+      \ ruta. Es la longitud de la ruta\\n\\nNota: Hemos pretendido que el patron\
+      \ se pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que\
+      \ si en cierto momento cambia la alimentacion de los elementos de radiacion\
+      \ que entonces el patron se redibuje adotando la nueva forma. Pero tenemos un\
+      \ problema que nos frena y es la manera en que funcionan las graficas 3d de\
+      \ matplotlib. Toca buscar alternativas para lograrlo. \\n\\nRetos para mejorar:\
+      \ es mas natural que el bloque pueda identifcar phi y theta a partir de las\
+      \ senals que aporta la ruta, es decir, usando las mismas senales que usa el\
+      \ bloque e_polar_graf_3d_p_f\\n', ['L_path', 'excitaciones', 'phi', 'posiciones',\
+      \ 'theta'])"
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [595, 403]
+    coordinate: [570, 336]
     rotation: 0
     state: enabled
 - name: import_0
@@ -618,67 +699,101 @@ blocks:
     coordinate: [619, 13]
     rotation: 0
     state: true
-- name: qtgui_number_sink_0
-  id: qtgui_number_sink
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
   parameters:
     affinity: ''
     alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
     autoscale: 'False'
-    avg: '0'
-    color1: ("black", "black")
-    color10: ("black", "black")
-    color2: ("black", "black")
-    color3: ("black", "black")
-    color4: ("black", "black")
-    color5: ("black", "black")
-    color6: ("black", "black")
-    color7: ("black", "black")
-    color8: ("black", "black")
-    color9: ("black", "black")
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
     comment: ''
-    factor1: '1'
-    factor10: '1'
-    factor2: '1'
-    factor3: '1'
-    factor4: '1'
-    factor5: '1'
-    factor6: '1'
-    factor7: '1'
-    factor8: '1'
-    factor9: '1'
-    graph_type: qtgui.NUM_GRAPH_HORIZ
-    gui_hint: 2,0,1,1
-    label1: Campo E
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
-    max: Rmax
-    min: '0'
-    name: '"Campo E"'
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
     nconnections: '1'
+    size: 1024*8
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
     type: float
-    unit1: ''
-    unit10: ''
-    unit2: ''
-    unit3: ''
-    unit4: ''
-    unit5: ''
-    unit6: ''
-    unit7: ''
-    unit8: ''
-    unit9: ''
     update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-1'
+    yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [590, 307]
+    coordinate: [881, 534]
     rotation: 0
     state: enabled
 - name: ruta3d
@@ -707,10 +822,11 @@ blocks:
       \    g=np.concatenate((g,np.array([x[i]]*Sps)))\n    return g\n\nclass receiver_path(object):\n\
       \    def __init__(self, Nang):\n        self.Nang=Nang\n        self.Nrings=int(Nang/2)\n\
       \        self.pasoAngular=360/Nang\n        self.L_path=Nang*self.Nrings\n \
-      \       self.phi=np.linspace(0,360-self.pasoAngular,Nang)*np.pi/180\n      \
-      \  self.theta=np.linspace(0,180-self.pasoAngular,self.Nrings)*np.pi/180\n  \
-      \    \n    # calculo de los valores de phi para todo el recorrido          \
-      \  \n    def phi_path(self,):\n        return(np.tile(self.phi, self.Nrings))\n\
+      \       #self.phi=np.linspace(0,360-self.pasoAngular,Nang)*np.pi/180\n     \
+      \   #self.theta=np.linspace(0,180-self.pasoAngular,self.Nrings)*np.pi/180\n\
+      \        self.phi=np.linspace(0,360,Nang)*np.pi/180\n        self.theta=np.linspace(0,180,self.Nrings)*np.pi/180\n\
+      \            \n    # calculo de los valores de phi para todo el recorrido  \
+      \          \n    def phi_path(self,):\n        return(np.tile(self.phi, self.Nrings))\n\
       \n    # calculo de los valores de theta para todo el recorrido\n    def theta_path(self,):\n\
       \        return(zerooh(self.theta,self.Nang))\n\n\n"
   states:
@@ -748,12 +864,14 @@ blocks:
     state: enabled
 
 connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
+- [blocks_add_xx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_complex_to_mag_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_stream_to_vector_0, '0', blocks_vector_to_stream_0, '0']
+- [blocks_stream_to_vector_0, '0', epy_block_0_1_0_0_0, '0']
 - [blocks_throttle_0_0_0, '0', virtual_sink_0, '0']
 - [blocks_vector_source_x_0_1, '0', blocks_throttle_0_0_0, '0']
-- [blocks_vector_to_stream_0, '0', epy_block_0_1_0_0_0, '0']
-- [blocks_vector_to_stream_0, '0', qtgui_number_sink_0, '0']
+- [blocks_vector_to_stream_0, '0', blocks_add_xx_0, '0']
 - [virtual_source_0, '0', blocks_complex_to_mag_0, '0']
 
 metadata:

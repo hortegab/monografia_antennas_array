@@ -18,30 +18,42 @@ theta: son los valores unicos usados en la grafica. Usualmente phi es un vector 
 * posiciones: vector que contiene la posicion de cada uno de los componentes del arreglo
 * excitaciones: vector que contiene la alimentacion para cada uno de los componentes del arreglo
 * La senal que entra al bloque corresponde a las mediciones de campo realizadas  para todos los posibles ubicaciones angulares que se puede lograr con las combinaciones de phi y theta
+*L_path: es el numero de puntos que tiene la ruta. Es la longitud de la ruta
 
 Nota: Hemos pretendido que el patron se pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que si en cierto momento cambia la alimentacion de los elementos de radiacion que entonces el patron se redibuje adotando la nueva forma. Pero tenemos un problema que nos frena y es la manera en que funcionan las graficas 3d de matplotlib. Toca buscar alternativas para lograrlo. 
 
 Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a partir de las senals que aporta la ruta, es decir, usando las mismas senales que usa el bloque e_polar_graf_3d_p_f
 """
-    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0):
+    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0, L_path=8192):
         gr.sync_block.__init__(self,
-            name="e_antenna_graf_f",
-            in_sig=[np.float32],
+            name="e_vector_antenna_graf_f",
+            in_sig=[(np.float32,L_path)],
             out_sig=None)
             
-        # Parametros                   
+        # Parametros
+        self.L_path=L_path                   
         self.Tsamp=1./samp_rate
         self.contador=0
         self.phi=phi
         self.theta=theta
         self.posiciones=posiciones
         self.excitaciones=excitaciones
-        
-    # Canvas grafica la plantilla sobre la que se posicionara la grafica 3d
-    def canvas_3d(self, Rmax):
-        # Rmax: es el mayor valor de magnitude de campo E
+        self.ax1=None
+        self.ax2=None
+               
+    # Canvas para graficar el patron solo
+    def canvas_3d_patron(self,):
         fig=plt.figure()
+        ax2=fig.add_subplot(1,1,1, projection='3d')
+        ax2.set_xlabel('x')
+        ax2.set_ylabel('y')
+        ax2.set_zlabel('z')
+        ax2.set_title("Patron de radiacion del arreglo")
+        return ax2
         
+    # Canvas para graficar el array con alimentacion y el patron
+    def canvas_3d_alimentacion_y_patron(self, ):
+        fig=plt.figure()
         ax1=fig.add_subplot(2,1,1, projection='3d')
         ax1.set_title("El Arreglo-sus elementos y alimentacion")
         ax1.set_xlabel('x')
@@ -49,15 +61,11 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         ax1.set_zlabel('z')
 
         ax2=fig.add_subplot(2,1,2, projection='3d')
-        #ax2.set_xlim(-Rmax,Rmax)
-        #ax2.set_ylim(-Rmax,Rmax)
-        #ax2.set_zlim(-Rmax,Rmax)
         ax2.set_xlabel('x')
         ax2.set_ylabel('y')
         ax2.set_zlabel('z')
         ax2.set_title("Patron de radiacion del arreglo")
-               
-        return ax1, ax2
+        return ax1,ax2
 
     # Traduccion de coordenadas esfericas a cartecianas
     def esferica2cartesiana(self,phi,theta,R):
@@ -95,28 +103,28 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         # * R
         # Nrings: es el numero de filasy equivale al numero de anillos en la graf 3d
         # Nang: es el numero de columnas y a la vez de puntos por cada anillo de la graf 3d
-        R_path=input_items[0] 
+        R_path=input_items[0][0] 
         Nang=len(self.phi) 
         Nrings=len(self.theta)
         PHI,THETA=np.meshgrid(self.phi,self.theta)
         R=R_path.reshape(Nrings,Nang)
         Rmax=np.max(R)
         X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)
-        
+                
         # El if  es porque el canva solo se dibuna una vez y no hemos logrado que se haga
         # dentro del constructor.
         if self.contador == 0:
             self.contador=1
             # definimos el canvas por una unica vez
-            ax1,ax2=self.canvas_3d(Rmax)
-            # hacemos las graficas que no se repiten
-            self.graficaExcitaciones(ax1)
-        # Finalmente se ordena la grafica de los valores en X,Y,Z       
+            #self.ax2=self.canvas_3d_patron() # cuando queremos ver solo el patron
+            self.ax1,self.ax2=self.canvas_3d_alimentacion_y_patron()
+
+        # Finalmente se ordena la grafica de los valores en X,Y,Z  
         #ax2.plot_wireframe(X,Y,Z)
-        #plt.clr()
-        ax2.plot_surface(X,Y,Z,cmap="coolwarm")
-        plt.show()
+        self.ax2.cla()
+        self.ax1.cla()
+        self.graficaExcitaciones(self.ax1)
+        self.ax2.plot_surface(X,Y,Z,cmap="coolwarm")
         plt.pause(self.Tsamp)
-        ax2.cla()
-        
+                
         return len(input_items[0])

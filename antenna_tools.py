@@ -1,4 +1,4 @@
-# Aqui se reunen una serie de funciones que puede ser de utilidad en la definicion o configuracion de arreglos de antenas
+	# Aqui se reunen una serie de funciones que puede ser de utilidad en la definicion o configuracion de arreglos de antenas
 
 import numpy as np
 import scipy.integrate as integrate
@@ -37,8 +37,17 @@ def amplitudCosElev(posiciones,escala=0.8):
 def patron1():
     # Patron arbitrario generado a partir de tabla
     if ("patron" not in dir(patron1)):
-        angulosTheta = np.array([0,30,60,90,120,150,180])*np.pi/180
-        intensidadesRel = np.array([1e-3,1,1.2,2,.3,.1,0])
+        angulosTheta = np.linspace(0,180,91)*np.pi/180
+        #angulosTheta = np.array([0,30,60,90,120,150,180])*np.pi/180
+        #intensidadesRel = np.array([1e-3,1,1.2,2,.3,.1,0])
+        #intensidadesRel = np.array([8,8.1,8,6.1,4.1,2.1,5])
+        intensidadesRel =np.array([3.9,4,4.1,4.2,4.3,4.2,4.25,4.2,4.1,4.05,4,3.95,3.95,
+            4,4.05,4.15,4.1,4.1,4.1,4.1,4.05,3.95,3.9,
+            3.85,3.8,3.8,3.9,3.95,4,4,4.05,4,4,4,3.9,3.85,
+            3.8,3.8,3.75,3.6,3.55,3.45,3.35,3.25,3.15,3.05,3,
+            2.85,2.7,2.65,2.6,2.6,2.6,2.6,2.6,2.6,2.5,2.5,2.45,
+            2.35,2.2,2.15,1.9,1.9,1.95,2,1.9,1,1,1.7,2.1,2.3,2.35,
+            2.25,2,1,1,1.8,2.1,2,1.8,1,2.1,2.5,2.55,2.5,2,1,0.5,2.2,2.45])
         f_denorm = interp.interp1d(angulosTheta,intensidadesRel,kind="cubic")
         # potenciaMedia = integrate.dblquad(lambda fi,th: f_denorm(th)**2*np.sin(th),0,np.pi,-np.pi,np.pi)[0]/(4*np.pi)
         # Por haber simetria respecto al eje z, la integral se reduce a
@@ -49,6 +58,30 @@ def patron1():
         patron1.patron = patron
     return patron1.patron
 
+def parche_sat():
+    # Patron de la antena parche para el satelite de proy
+    
+    # la tabla de valores que representa al patron desde 0 hasta 180 grados
+    angulosTheta = np.linspace(0,180,91)*np.pi/180
+    intensidadesRel =np.array([3.9,4,4.1,4.2,4.3,4.2,4.25,4.2,4.1,4.05,4,3.95,3.95,
+        4,4.05,4.15,4.1,4.1,4.1,4.1,4.05,3.95,3.9,
+        3.85,3.8,3.8,3.9,3.95,4,4,4.05,4,4,4,3.9,3.85,
+        3.8,3.8,3.75,3.6,3.55,3.45,3.35,3.25,3.15,3.05,3,
+        2.85,2.7,2.65,2.6,2.6,2.6,2.6,2.6,2.6,2.5,2.5,2.45,
+        2.35,2.2,2.15,1.9,1.9,1.95,2,1.9,1,1,1.7,2.1,2.3,2.35,
+        2.25,2,1,1,1.8,2.1,2,1.8,1,2.1,2.5,2.55,2.5,2,1,0.5,2.2,2.45])
+    
+    # La interpolacion
+    f_denorm = interp.interp1d(angulosTheta,intensidadesRel,kind="cubic")
+    potenciaMedia = integrate.quad(lambda th: f_denorm(th)**2*np.sin(th),0,np.pi)[0]/2
+    escala = 1/potenciaMedia**.5 # para normalizar a potencia media 1
+    
+    # el patron para cualquier phi, theta
+    def patron(phi,theta):
+        return escala*f_denorm(theta)
+    parche_sat.patron = patron
+    return parche_sat.patron
+    
 def patronDipoloCorto():
     if ("patron" not in dir(patronDipoloCorto)):
         f_denorm = np.sin
