@@ -198,10 +198,5 @@ def posiciones_arreglo_sat_full(Nx,Ny,D):
    a2=posiciones_arreglo_sat_ladoxdoble(Ny,Nx,D)
    return np.concatenate((a1,a2)) 
    #return a1
-   
- 
-
-   
-   return np.concatenate((a1,a2)) 
       
 

@@ -80,7 +80,7 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.D = D = .42
-        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_ladoydoble(1,4,D)
+        self.posiciones = posiciones = antenna_tools.posiciones_arreglo_sat_full(1,4,D)
         self.theta_apuntar_gr = theta_apuntar_gr = 0
         self.phi_apuntar_gr = phi_apuntar_gr = 0
         self.N = N = len(posiciones)
@@ -90,6 +90,7 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 32000
         self.patron = patron = antenna_tools.parche_sat()(po.phi_path(), po.theta_path())
         self.excitaciones = excitaciones = w_magnitudes*np.exp(1j*w_fases)
+        self.Rmax = Rmax = N
 
         ##################################################
         # Blocks
@@ -97,9 +98,6 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self._theta_apuntar_gr_range = Range(0, 180, 1, 0, 200)
         self._theta_apuntar_gr_win = RangeWidget(self._theta_apuntar_gr_range, self.set_theta_apuntar_gr, 'theta_apuntar_gr', "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._theta_apuntar_gr_win)
-        self._phi_apuntar_gr_range = Range(0, 180, 1, 0, 200)
-        self._phi_apuntar_gr_win = RangeWidget(self._phi_apuntar_gr_range, self.set_phi_apuntar_gr, 'phi_apuntar_gr', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._phi_apuntar_gr_win)
         self.epy_block_0_1_0_0_0 = epy_block_0_1_0_0_0.polar_graf_f(samp_rate=samp_rate, phi=po.phi, theta=po.theta, posiciones=posiciones, excitaciones=excitaciones, L_path=po.L_path)
         self.epy_block_0_1_0_0_0.set_block_alias("3d_f")
         self.epy_block_0 = epy_block_0.blk(posiciones=posiciones, excitaciones=excitaciones)
@@ -144,7 +142,7 @@ class arraygeneral(gr.top_block, Qt.QWidget):
 
     def set_D(self, D):
         self.D = D
-        self.set_posiciones(antenna_tools.posiciones_arreglo_sat_ladoydoble(1,4,self.D))
+        self.set_posiciones(antenna_tools.posiciones_arreglo_sat_full(1,4,self.D))
 
     def get_posiciones(self):
         return self.posiciones
@@ -175,6 +173,7 @@ class arraygeneral(gr.top_block, Qt.QWidget):
 
     def set_N(self, N):
         self.N = N
+        self.set_Rmax(self.N)
         self.set_w_magnitudes(np.array([1]*self.N))
 
     def get_w_magnitudes(self):
@@ -218,6 +217,12 @@ class arraygeneral(gr.top_block, Qt.QWidget):
         self.excitaciones = excitaciones
         self.epy_block_0.excitaciones = self.excitaciones
         self.epy_block_0_1_0_0_0.excitaciones = self.excitaciones
+
+    def get_Rmax(self):
+        return self.Rmax
+
+    def set_Rmax(self, Rmax):
+        self.Rmax = Rmax
 
 
 

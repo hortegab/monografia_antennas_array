@@ -736,10 +736,10 @@ blocks:
       \ se deben crear 3 matrices de NringsxNang:\n        # * PHI\n        # * THETA\n\
       \        # * R\n        # Nrings: es el numero de filasy equivale al numero\
       \ de anillos en la graf 3d\n        # Nang: es el numero de columnas y a la\
-      \ vez de puntos por cada anillo de la graf 3d\n        R_path=input_items[0][0]\
-      \ \n        M_patterns=len(input_items[0]) # numero de patrones recibidos\n\
-      \        Nang=len(self.phi) \n        Nrings=len(self.theta)\n        PHI,THETA=np.meshgrid(self.phi,self.theta)\n\
-      \        R=R_path.reshape(Nrings,Nang)\n        Rmax=np.max(R)\n        X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n\
+      \ vez de puntos por cada anillo de la graf 3d\n        \n        M_patterns=len(input_items[0])\
+      \ # numero de patrones recibidos\n        Nang=len(self.phi) \n        Nrings=len(self.theta)\n\
+      \        PHI,THETA=np.meshgrid(self.phi,self.theta)\n        #R_path=input_items[0][0]\n\
+      \        #R=R_path.reshape(Nrings,Nang)\n        #X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n\
       \                \n        # El if  es porque el canva solo se dibuna una vez\
       \ y no hemos logrado que se haga\n        # dentro del constructor.\n      \
       \  if self.contador == 0:\n            self.contador=1\n            # definimos\
@@ -747,7 +747,9 @@ blocks:
       \ # cuando queremos ver solo el patron\n            self.ax1,self.ax2=self.canvas_3d_alimentacion_y_patron()\n\
       \n        # Finalmente se ordena la grafica de los valores en X,Y,Z  \n    \
       \    #ax2.plot_wireframe(X,Y,Z)\n        for i in range(M_patterns):\n     \
-      \       self.ax2.cla()\n            self.ax1.cla()\n            self.graficaExcitaciones(self.ax1)\n\
+      \       R_path=input_items[0][i]\n            R=R_path.reshape(Nrings,Nang)\n\
+      \            X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n            self.ax2.cla()\n\
+      \            self.ax1.cla()\n            self.graficaExcitaciones(self.ax1)\n\
       \            self.ax2.plot_surface(X,Y,Z,cmap=\"coolwarm\")\n            plt.pause(self.Tsamp)\n\
       \                \n        return len(input_items[0])\n"
     affinity: ''

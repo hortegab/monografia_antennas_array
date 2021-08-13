@@ -103,14 +103,14 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
         # * R
         # Nrings: es el numero de filasy equivale al numero de anillos en la graf 3d
         # Nang: es el numero de columnas y a la vez de puntos por cada anillo de la graf 3d
-        R_path=input_items[0][0] 
+        
         M_patterns=len(input_items[0]) # numero de patrones recibidos
         Nang=len(self.phi) 
         Nrings=len(self.theta)
         PHI,THETA=np.meshgrid(self.phi,self.theta)
-        R=R_path.reshape(Nrings,Nang)
-        Rmax=np.max(R)
-        X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)
+        #R_path=input_items[0][0]
+        #R=R_path.reshape(Nrings,Nang)
+        #X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)
                 
         # El if  es porque el canva solo se dibuna una vez y no hemos logrado que se haga
         # dentro del constructor.
@@ -122,21 +122,14 @@ Retos para mejorar: es mas natural que el bloque pueda identifcar phi y theta a 
 
         # Finalmente se ordena la grafica de los valores en X,Y,Z  
         #ax2.plot_wireframe(X,Y,Z)
-
-        self.ax1.cla()
-        self.ax1.set_title("El Arreglo-sus elementos y alimentacion")
-        self.ax1.set_xlabel('x')
-        self.ax1.set_ylabel('y')
-        self.ax1.set_zlabel('z')
-        self.graficaExcitaciones(self.ax1)
-        
-        self.ax2.cla()        
-        self.ax2.set_xlabel('x')
-        self.ax2.set_ylabel('y')
-        self.ax2.set_zlabel('z')
-        self.ax2.set_title("Patron de radiacion del arreglo")
-
-        self.ax2.plot_surface(X,Y,Z,cmap="coolwarm")
-        plt.pause(self.Tsamp)
+        for i in range(M_patterns):
+            R_path=input_items[0][i]
+            R=R_path.reshape(Nrings,Nang)
+            X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)
+            self.ax2.cla()
+            self.ax1.cla()
+            self.graficaExcitaciones(self.ax1)
+            self.ax2.plot_surface(X,Y,Z,cmap="coolwarm")
+            plt.pause(self.Tsamp)
                 
         return len(input_items[0])

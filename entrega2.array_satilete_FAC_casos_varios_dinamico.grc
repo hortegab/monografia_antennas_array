@@ -107,7 +107,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [635, 431]
+    coordinate: [637, 430]
     rotation: 0
     state: true
 - name: po
@@ -126,12 +126,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: antenna_tools.posiciones_arreglo_planar(1,4,D)
+    value: antenna_tools.posiciones_arreglo_planar(1,8,D)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [949, 265]
+    coordinate: [1022, 278]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -143,7 +143,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [918, 281]
+    coordinate: [933, 301]
     rotation: 0
     state: disabled
 - name: posiciones
@@ -155,9 +155,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [862, 312]
+    coordinate: [806, 286]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: posiciones
   id: variable
   parameters:
@@ -167,9 +167,33 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [890, 296]
+    coordinate: [821, 319]
     rotation: 0
     state: disabled
+- name: posiciones
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.posiciones_arreglo_planar(4,4,D)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1007, 343]
+    rotation: 0
+    state: disabled
+- name: posiciones
+  id: variable
+  parameters:
+    comment: ''
+    value: np.array([[0,0,D], [0,0,2*D], [D,0,D], [D,0,2*D]])
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1029, 195]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -228,6 +252,18 @@ blocks:
     coordinate: [842, 76]
     rotation: 0
     state: enabled
+- name: w_magnitudes
+  id: variable
+  parameters:
+    comment: ''
+    value: antenna_tools.amplitudCosElev(posiciones,0.8)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1017, 73]
+    rotation: 0
+    state: disabled
 - name: analog_const_source_x_0
   id: analog_const_source_x
   parameters:
@@ -242,7 +278,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [11, 106]
+    coordinate: [17, 132]
     rotation: 0
     state: true
 - name: antenna_tools
@@ -399,7 +435,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [462, 172]
+    coordinate: [492, 168]
     rotation: 0
     state: true
 - name: blocks_stream_to_vector_0
