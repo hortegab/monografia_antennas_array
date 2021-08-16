@@ -145,7 +145,7 @@ blocks:
     bus_structure: null
     coordinate: [933, 301]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: posiciones
   id: variable
   parameters:
@@ -193,7 +193,7 @@ blocks:
     bus_structure: null
     coordinate: [1029, 195]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: samp_rate
   id: variable
   parameters:

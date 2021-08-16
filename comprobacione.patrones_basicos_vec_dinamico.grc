@@ -160,7 +160,7 @@ blocks:
     bus_structure: null
     coordinate: [1056, 330]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: patron
   id: variable
   parameters:
@@ -196,7 +196,7 @@ blocks:
     bus_structure: null
     coordinate: [1224, 392]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: phi_apuntar_gr
   id: variable
   parameters:
@@ -666,7 +666,145 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [562, 316]
+    coordinate: [817, 509]
+    rotation: 0
+    state: disabled
+- name: epy_block_0_1_0_0_0_0
+  id: epy_block
+  parameters:
+    L_path: po.L_path
+    _source_code: "from mpl_toolkits import mplot3d\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport matplotlib.pyplot as plt\n\nclass polar_graf_f(gr.sync_block):\n\
+      \    \"\"\"\nHecho por Homero Ortega Boada. Universidad Industrial de Santander.\n\
+      Permite mostrar las graficas m\xE1s relevantes para un arreglo de antenas como:\n\
+      * La distribuci\xF3n en 3d de los componentes del arreglo con su respectiva\
+      \ alimentaci\xF3n\n* Las alimentaciones que cada componente (radiador) tiene.\n\
+      * grafica polar del patron de arreglo con coordenadas esfericas. Las graficas\
+      \ las hacemos con herramientas externas a GNU Radio ya que al momento no sabiamos\
+      \ como hacerlo de otra manera. Los parametros de entrada son:\n\n* samp_rate:\
+      \ es la frecuencia de muestreo en Hz que nunca falta en GNURadio. Influye en\
+      \ la velocidad de la grafica, supuestamente se los valores de medicion del \
+      \ campo llegan con esa rata\n* Rmax sirve para definir los limites de la grafica,\
+      \ se supone que es el m\xE1ximo valor que puede llegar a tomar el campo en magnitud\n\
+      * phi: son los valores unicos usados en la grafica para phi. Usualmente phi\
+      \ es un vector de valores entre 0 y 2pi con un cierto paso angular\ntheta: son\
+      \ los valores unicos usados en la grafica. Usualmente phi es un vector de valores\
+      \ entre 0 y pi con el mismo paso angular que phi. De manera que este vector\
+      \ tiene 2 veces menos valores que phi\n* posiciones: vector que contiene la\
+      \ posicion de cada uno de los componentes del arreglo\n* excitaciones: vector\
+      \ que contiene la alimentacion para cada uno de los componentes del arreglo\n\
+      * La senal que entra al bloque corresponde a las mediciones de campo realizadas\
+      \  para todos los posibles ubicaciones angulares que se puede lograr con las\
+      \ combinaciones de phi y theta\n*L_path: es el numero de puntos que tiene la\
+      \ ruta. Es la longitud de la ruta\n\nNota: Hemos pretendido que el patron se\
+      \ pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que si\
+      \ en cierto momento cambia la alimentacion de los elementos de radiacion que\
+      \ entonces el patron se redibuje adotando la nueva forma. Pero tenemos un problema\
+      \ que nos frena y es la manera en que funcionan las graficas 3d de matplotlib.\
+      \ Toca buscar alternativas para lograrlo. \n\nRetos para mejorar: es mas natural\
+      \ que el bloque pueda identifcar phi y theta a partir de las senals que aporta\
+      \ la ruta, es decir, usando las mismas senales que usa el bloque e_polar_graf_3d_p_f\n\
+      \"\"\"\n    def __init__(self,samp_rate=32000,phi=0,theta=0, posiciones=0, excitaciones=0,\
+      \ L_path=8192):\n        gr.sync_block.__init__(self,\n            name=\"e_vector_antenna_graf_f\"\
+      ,\n            in_sig=[(np.float32,L_path)],\n            out_sig=None)\n  \
+      \          \n        # Parametros\n        self.L_path=L_path              \
+      \     \n        self.Tsamp=1./samp_rate\n        self.contador=0\n        self.phi=phi\n\
+      \        self.theta=theta\n        self.posiciones=posiciones\n        self.excitaciones=excitaciones\n\
+      \        self.ax1=None\n        self.ax2=None\n               \n    # Canvas\
+      \ para graficar el patron solo\n    def canvas_3d_patron(self,):\n        fig=plt.figure()\n\
+      \        ax2=fig.add_subplot(1,1,1, projection='3d')\n        ax2.set_xlabel('x')\n\
+      \        ax2.set_ylabel('y')\n        ax2.set_zlabel('z')\n        ax2.set_title(\"\
+      Patron de radiacion del arreglo\")\n        return ax2\n        \n    # Canvas\
+      \ para graficar el array con alimentacion y el patron\n    def canvas_3d_alimentacion_y_patron(self,\
+      \ ):\n        fig=plt.figure()\n        ax1=fig.add_subplot(1,2,1, projection='3d')\n\
+      \        ax1.set_title(\"El Arreglo-sus elementos y alimentacion\")\n      \
+      \  ax1.set_xlabel('x')\n        ax1.set_ylabel('y')\n        ax1.set_zlabel('z')\n\
+      \n        ax2=fig.add_subplot(1,2,2, projection='3d')\n        ax2.set_xlabel('x')\n\
+      \        ax2.set_ylabel('y')\n        ax2.set_zlabel('z')\n        ax2.set_title(\"\
+      Patron de radiacion del arreglo\")\n        return ax1,ax2\n\n    # Traduccion\
+      \ de coordenadas esfericas a cartecianas\n    def esferica2cartesiana(self,phi,theta,R):\n\
+      \        x = R * np.cos(phi) * np.sin(theta)\n        y = R * np.sin(phi) *\
+      \ np.sin(theta)\n        z = R * np.cos(theta)\n        return(x,y,z)      \
+      \                             \n\n    def graficaExcitaciones(self,ax=None):\n\
+      \        \n        def sep_xyz(filas_xyz):\n            return (filas_xyz[:,0],filas_xyz[:,1],filas_xyz[:,2])\n\
+      \                \n        pmin=self.posiciones.min()\n        pmax=self.posiciones.max()\n\
+      \        lims = (pmin-(pmax-pmin)*.1,pmax+(pmax-pmin)*.1)\n\n        ax.plot3D(*sep_xyz(self.posiciones),'or')\n\
+      \        Emax=np.abs(self.excitaciones).max()\n        if self.posiciones.shape[0]>1:\n\
+      \            dmin=min((np.linalg.norm(x-y) for x in self.posiciones for y in\
+      \ self.posiciones if np.linalg.norm(x-y) >0))\n            factor = .618*dmin/Emax\n\
+      \        else:\n            factor = 1\n            lims = (-1,1)\n        ax.quiver(*sep_xyz(self.posiciones),self.excitaciones.real*factor,self.excitaciones.imag*factor,np.zeros(self.excitaciones.shape))\n\
+      \        ax.set_xlim(*lims)\n        ax.set_ylim(*lims)\n        ax.set_zlim(*lims)\n\
+      \        \n    def work(self, input_items, output_items):\n        # Inicialmente\
+      \ se deben crear 3 matrices de NringsxNang:\n        # * PHI\n        # * THETA\n\
+      \        # * R\n        # Nrings: es el numero de filasy equivale al numero\
+      \ de anillos en la graf 3d\n        # Nang: es el numero de columnas y a la\
+      \ vez de puntos por cada anillo de la graf 3d\n        R_path=input_items[0][0]\
+      \ \n        M_patterns=len(input_items[0]) # numero de patrones recibidos\n\
+      \        Nang=len(self.phi) \n        Nrings=len(self.theta)\n        PHI,THETA=np.meshgrid(self.phi,self.theta)\n\
+      \        R=R_path.reshape(Nrings,Nang)\n        Rmax=np.max(R)\n        X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n\
+      \                \n        # El if  es porque el canva solo se dibuna una vez\
+      \ y no hemos logrado que se haga\n        # dentro del constructor.\n      \
+      \  if self.contador == 0:\n            self.contador=1\n            # definimos\
+      \ el canvas por una unica vez\n            #self.ax2=self.canvas_3d_patron()\
+      \ # cuando queremos ver solo el patron\n            self.ax1,self.ax2=self.canvas_3d_alimentacion_y_patron()\n\
+      \n        # Finalmente se ordena la grafica de los valores en X,Y,Z  \n    \
+      \    #ax2.plot_wireframe(X,Y,Z)\n\n        self.ax1.cla()\n        self.ax1.set_title(\"\
+      El Arreglo-sus elementos y alimentacion\")\n        self.ax1.set_xlabel('x')\n\
+      \        self.ax1.set_ylabel('y')\n        self.ax1.set_zlabel('z')\n      \
+      \  self.graficaExcitaciones(self.ax1)\n        \n        self.ax2.cla()    \
+      \    \n        self.ax2.set_xlabel('x')\n        self.ax2.set_ylabel('y')\n\
+      \        self.ax2.set_zlabel('z')\n        self.ax2.set_title(\"Patron de radiacion\
+      \ del arreglo\")\n\n        self.ax2.plot_surface(X,Y,Z,cmap=\"coolwarm\")\n\
+      \        plt.pause(self.Tsamp)\n                \n        return len(input_items[0])\n"
+    affinity: ''
+    alias: 3d_f
+    comment: ''
+    excitaciones: excitaciones
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    phi: po.phi
+    posiciones: posiciones
+    samp_rate: samp_rate
+    theta: po.theta
+  states:
+    _io_cache: "('e_vector_antenna_graf_f', 'polar_graf_f', [('samp_rate', '32000'),\
+      \ ('phi', '0'), ('theta', '0'), ('posiciones', '0'), ('excitaciones', '0'),\
+      \ ('L_path', '8192')], [('0', 'float', 8192)], [], '\\nHecho por Homero Ortega\
+      \ Boada. Universidad Industrial de Santander.\\nPermite mostrar las graficas\
+      \ m\xE1s relevantes para un arreglo de antenas como:\\n* La distribuci\xF3n\
+      \ en 3d de los componentes del arreglo con su respectiva alimentaci\xF3n\\n*\
+      \ Las alimentaciones que cada componente (radiador) tiene.\\n* grafica polar\
+      \ del patron de arreglo con coordenadas esfericas. Las graficas las hacemos\
+      \ con herramientas externas a GNU Radio ya que al momento no sabiamos como hacerlo\
+      \ de otra manera. Los parametros de entrada son:\\n\\n* samp_rate: es la frecuencia\
+      \ de muestreo en Hz que nunca falta en GNURadio. Influye en la velocidad de\
+      \ la grafica, supuestamente se los valores de medicion del  campo llegan con\
+      \ esa rata\\n* Rmax sirve para definir los limites de la grafica, se supone\
+      \ que es el m\xE1ximo valor que puede llegar a tomar el campo en magnitud\\\
+      n* phi: son los valores unicos usados en la grafica para phi. Usualmente phi\
+      \ es un vector de valores entre 0 y 2pi con un cierto paso angular\\ntheta:\
+      \ son los valores unicos usados en la grafica. Usualmente phi es un vector de\
+      \ valores entre 0 y pi con el mismo paso angular que phi. De manera que este\
+      \ vector tiene 2 veces menos valores que phi\\n* posiciones: vector que contiene\
+      \ la posicion de cada uno de los componentes del arreglo\\n* excitaciones: vector\
+      \ que contiene la alimentacion para cada uno de los componentes del arreglo\\\
+      n* La senal que entra al bloque corresponde a las mediciones de campo realizadas\
+      \  para todos los posibles ubicaciones angulares que se puede lograr con las\
+      \ combinaciones de phi y theta\\n*L_path: es el numero de puntos que tiene la\
+      \ ruta. Es la longitud de la ruta\\n\\nNota: Hemos pretendido que el patron\
+      \ se pueda redibujar en tiempo real para nuevas situaciones. Por ejemplo, que\
+      \ si en cierto momento cambia la alimentacion de los elementos de radiacion\
+      \ que entonces el patron se redibuje adotando la nueva forma. Pero tenemos un\
+      \ problema que nos frena y es la manera en que funcionan las graficas 3d de\
+      \ matplotlib. Toca buscar alternativas para lograrlo. \\n\\nRetos para mejorar:\
+      \ es mas natural que el bloque pueda identifcar phi y theta a partir de las\
+      \ senals que aporta la ruta, es decir, usando las mismas senales que usa el\
+      \ bloque e_polar_graf_3d_p_f\\n', ['L_path', 'excitaciones', 'phi', 'posiciones',\
+      \ 'theta'])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [577, 320]
     rotation: 0
     state: enabled
 - name: import_0
@@ -753,6 +891,7 @@ connections:
 - [blocks_complex_to_mag_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_throttle_0_0_0, '0']
 - [blocks_stream_to_vector_0, '0', epy_block_0_1_0_0_0, '0']
+- [blocks_stream_to_vector_0, '0', epy_block_0_1_0_0_0_0, '0']
 - [blocks_throttle_0_0_0, '0', virtual_sink_0, '0']
 - [blocks_vector_source_x_0_1, '0', blocks_multiply_const_vxx_0, '0']
 - [virtual_source_0, '0', blocks_complex_to_mag_0, '0']
