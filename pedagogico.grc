@@ -532,7 +532,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [254, 253]
+    coordinate: [349, 256]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -626,30 +626,29 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [247, 140]
+    coordinate: [302, 90]
     rotation: 0
     state: enabled
 - name: epy_block_0_1_0_0_0
   id: epy_block
   parameters:
     L_path: po.L_path
-    _source_code: "from mpl_toolkits.mplot3d.art3d import Poly3DCollection\nfrom mpl_toolkits\
-      \ import mplot3d\nimport numpy as np\nfrom gnuradio import gr\nimport matplotlib.pyplot\
-      \ as plt\n\nclass polar_graf_f(gr.sync_block):\n    \"\"\"\nHecho por Homero\
-      \ Ortega Boada. Universidad Industrial de Santander.\nPermite mostrar las graficas\
-      \ m\xE1s relevantes para un arreglo de antenas como:\n* La distribuci\xF3n en\
-      \ 3d de los componentes del arreglo con su respectiva alimentaci\xF3n\n* Las\
-      \ alimentaciones que cada componente (radiador) tiene.\n* grafica polar del\
-      \ patron de arreglo con coordenadas esfericas. Las graficas las hacemos con\
-      \ herramientas externas a GNU Radio ya que al momento no sabiamos como hacerlo\
-      \ de otra manera. Los parametros de entrada son:\n\n* samp_rate: es la frecuencia\
-      \ de muestreo en Hz que nunca falta en GNURadio. Influye en la velocidad de\
-      \ la grafica, supuestamente se los valores de medicion del  campo llegan con\
-      \ esa rata\n* Rmax sirve para definir los limites de la grafica, se supone que\
-      \ es el m\xE1ximo valor que puede llegar a tomar el campo en magnitud\n* phi:\
-      \ son los valores unicos usados en la grafica para phi. Usualmente phi es un\
-      \ vector de valores entre 0 y 2pi con un cierto paso angular\ntheta: son los\
-      \ valores unicos usados en la grafica. Usualmente phi es un vector de valores\
+    _source_code: "from mpl_toolkits import mplot3d\nimport numpy as np\nfrom gnuradio\
+      \ import gr\nimport matplotlib.pyplot as plt\n\nclass polar_graf_f(gr.sync_block):\n\
+      \    \"\"\"\nHecho por Homero Ortega Boada. Universidad Industrial de Santander.\n\
+      Permite mostrar las graficas m\xE1s relevantes para un arreglo de antenas como:\n\
+      * La distribuci\xF3n en 3d de los componentes del arreglo con su respectiva\
+      \ alimentaci\xF3n\n* Las alimentaciones que cada componente (radiador) tiene.\n\
+      * grafica polar del patron de arreglo con coordenadas esfericas. Las graficas\
+      \ las hacemos con herramientas externas a GNU Radio ya que al momento no sabiamos\
+      \ como hacerlo de otra manera. Los parametros de entrada son:\n\n* samp_rate:\
+      \ es la frecuencia de muestreo en Hz que nunca falta en GNURadio. Influye en\
+      \ la velocidad de la grafica, supuestamente se los valores de medicion del \
+      \ campo llegan con esa rata\n* Rmax sirve para definir los limites de la grafica,\
+      \ se supone que es el m\xE1ximo valor que puede llegar a tomar el campo en magnitud\n\
+      * phi: son los valores unicos usados en la grafica para phi. Usualmente phi\
+      \ es un vector de valores entre 0 y 2pi con un cierto paso angular\ntheta: son\
+      \ los valores unicos usados en la grafica. Usualmente phi es un vector de valores\
       \ entre 0 y pi con el mismo paso angular que phi. De manera que este vector\
       \ tiene 2 veces menos valores que phi\n* posiciones: vector que contiene la\
       \ posicion de cada uno de los componentes del arreglo\n* excitaciones: vector\
@@ -703,7 +702,7 @@ blocks:
       \ \n        M_patterns=len(input_items[0]) # numero de patrones recibidos\n\
       \        Nang=len(self.phi) \n        Nrings=len(self.theta)\n        PHI,THETA=np.meshgrid(self.phi,self.theta)\n\
       \        R=R_path.reshape(Nrings,Nang)\n        Rmax=np.max(R)\n        X,Y,Z=self.esferica2cartesiana(PHI,THETA,R)\n\
-      \                \n        # El if  es porque el canva solo se dibuja una vez\
+      \                \n        # El if  es porque el canva solo se dibuna una vez\
       \ y no hemos logrado que se haga\n        # dentro del constructor.\n      \
       \  if self.contador == 0:\n            self.contador=1\n            # definimos\
       \ el canvas por una unica vez\n            #self.ax2=self.canvas_3d_patron()\
@@ -847,15 +846,11 @@ blocks:
     state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', epy_block_0, '0']
 - [blocks_complex_to_mag_0, '0', blocks_stream_to_vector_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_throttle_0_0_0, '0']
 - [blocks_stream_to_vector_0, '0', epy_block_0_1_0_0_0, '0']
 - [blocks_throttle_0_0_0, '0', virtual_sink_0, '0']
-- [blocks_vector_source_x_0, '0', epy_block_0, '1']
-- [blocks_vector_source_x_0_0, '0', epy_block_0, '2']
 - [blocks_vector_source_x_0_1, '0', blocks_multiply_xx_0, '1']
-- [epy_block_0, '0', blocks_multiply_xx_0, '0']
 - [virtual_source_0, '0', blocks_complex_to_mag_0, '0']
 
 metadata:

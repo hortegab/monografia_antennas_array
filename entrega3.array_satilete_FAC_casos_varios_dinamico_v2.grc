@@ -381,22 +381,22 @@ blocks:
       \    return arreglo1    \n\n\ndef posiciones_arreglo_sat_ladoyp(Nx,Ny,D):\n\
       \    # radiadores en el eje y parte positiva\n    a1=posiciones_arreglo_planar(Nx,Ny,D)\n\
       \    # lo siguiente es para correr el array del centro para despejar el\n  \
-      \  # espacio que ocupa el cubo del satelite\n    a1=a1+np.array([-D/2,1.5*D,0])\n\
+      \  # espacio que ocupa el cubo del satelite\n    a1=a1+np.array([0,1.5*D,0])\n\
       \    return a1    \n\ndef posiciones_arreglo_sat_ladoydoble(Nx,Nypos,D):\n \
       \   # radiadores en el eje y a ambos lados\n    # Nypos, es el numero de elementos\
       \ solo en el lado y positivo\n    a1=posiciones_arreglo_sat_ladoyp(Nx,Nypos,D)\n\
       \    a2=a1+np.array([0,-(Nypos+2)*D,0])\n    return np.concatenate((a1,a2))\n\
       \ndef posiciones_arreglo_sat_ladoxp(Nx,Ny,D):\n    a1=posiciones_arreglo_planar(Nx,Ny,D)\n\
       \    # lo siguiente es para correr el array del centro para despejar el\n  \
-      \  # espacio que ocupa el cubo del satelite\n    a1=a1+np.array([1.5*D,-D/2,0])\n\
+      \  # espacio que ocupa el cubo del satelite\n    a1=a1+np.array([1.5*D,0,0])\n\
       \    return a1    \ndef posiciones_arreglo_sat_ladoxdoble(Nxpos,Ny,D):\n   \
       \ # radiadores en el eje y a ambos lados\n    # Nypos, es el numero de elementos\
       \ solo en el lado y positivo\n    a1=posiciones_arreglo_sat_ladoxp(Nxpos,Ny,D)\n\
       \    a2=a1+np.array([-(Nxpos+2)*D,0,0])\n    return np.concatenate((a1,a2))\
       \ \n\ndef posiciones_arreglo_sat_full(Nx,Ny,D):\n   a1=posiciones_arreglo_sat_ladoydoble(Nx,Ny,D)\n\
       \   a2=posiciones_arreglo_sat_ladoxdoble(Ny,Nx,D)\n   return np.concatenate((a1,a2))\
-      \ \n   #return a1\n   \n \n\n   \n   return np.concatenate((a1,a2)) \n     \
-      \ \n\n"
+      \ \n   #return a1\n   \n \n\n   \n   #return np.concatenate((a1,a2)) \n    \
+      \  \n\n"
   states:
     bus_sink: false
     bus_source: false
@@ -686,9 +686,31 @@ blocks:
       \ de coordenadas esfericas a cartecianas\n    def esferica2cartesiana(self,phi,theta,R):\n\
       \        x = R * np.cos(phi) * np.sin(theta)\n        y = R * np.sin(phi) *\
       \ np.sin(theta)\n        z = R * np.cos(theta)\n        return(x,y,z)      \
-      \                             \n\n    def graficaExcitaciones(self,ax=None):\n\
-      \        \n        def sep_xyz(filas_xyz):\n            return (filas_xyz[:,0],filas_xyz[:,1],filas_xyz[:,2])\n\
-      \                \n        pmin=self.posiciones.min()\n        pmax=self.posiciones.max()\n\
+      \                             \n    def graficaSatelite(self, ax=None):\n  \
+      \      #medidas en funci\xF3n de la longitud de onda lambda = 12.49 cm figuras\
+      \ centradas en el or\n        l1=30/12.49\n        l2=5/12.49\n\n        #panel\
+      \ solar 1\n        x1 = [l2, l2, l1, l1]\n        y1 = [l2, -l2, -l2, l2]\n\
+      \        z1 = [0, 0,0 , 0]\n        vertices1 = [list(zip(x1,y1,z1))]\n    \
+      \    panel1 = Poly3DCollection(vertices1,facecolor='Blue',rasterized=True )\n\
+      \n        #panel solar 2\n        x2 = [-l2, -l2, -l1, -l1]\n        y2 = [l2,\
+      \ -l2, -l2, l2]\n        z2 = [0, 0, 0 , 0]\n        vertices2 = [list(zip(x2,y2,z2))]\n\
+      \        panel2 = Poly3DCollection(vertices2,facecolor='Blue',rasterized=True\
+      \ )\n\n        #panel solar 3\n        x3 = [l2, l2, -l2, -l2]\n        y3 =\
+      \ [l1, l2, l2, l1]\n        z3 = [0, 0, 0 , 0]\n        vertices3 = [list(zip(x3,y3,z3))]\n\
+      \        panel3 = Poly3DCollection(vertices3,facecolor='Blue',rasterized=True\
+      \ )\n\n        #panel solar 4\n        x4 = [l2, l2, -l2, -l2]\n        y4 =\
+      \ [-l1, -l2, -l2, -l1]\n        z4 = [0, 0, 0 , 0]\n        vertices4 = [list(zip(x4,y4,z4))]\n\
+      \        panel4 = Poly3DCollection(vertices4,facecolor='Blue',rasterized=True\
+      \ )\n\n        #cuerpo sat\xE9lite\n        x5 = [l2, l2, -l2, -l2]\n      \
+      \  y5 = [l2, -l2, -l2, l2]\n        z5 = [0, 0,0 , 0]\n        vertices_body\
+      \ = [list(zip(x5,y5,z5))]\n\n        body = Poly3DCollection(vertices_body,facecolor='orange',rasterized=True)\n\
+      \n        ax.add_collection3d(panel1)\n        ax.add_collection3d(panel2)\n\
+      \        ax.add_collection3d(panel3)\n        ax.add_collection3d(panel4)\n\
+      \        ax.add_collection3d(body)\n\n        #ax.set_xlim(-3.5,3.5)\n     \
+      \   #ax.set_ylim(-2,2)\n        #ax.set_zlim(-1,1)\n        \n    def graficaExcitaciones(self,ax=None):\n\
+      \        self.graficaSatelite(ax)\n        def sep_xyz(filas_xyz):\n       \
+      \     return (filas_xyz[:,0],filas_xyz[:,1],filas_xyz[:,2])\n              \
+      \  \n        pmin=self.posiciones.min()\n        pmax=self.posiciones.max()\n\
       \        lims = (pmin-(pmax-pmin)*.1,pmax+(pmax-pmin)*.1)\n\n        ax.plot3D(*sep_xyz(self.posiciones),'or')\n\
       \        Emax=np.abs(self.excitaciones).max()\n        if self.posiciones.shape[0]>1:\n\
       \            dmin=min((np.linalg.norm(x-y) for x in self.posiciones for y in\
@@ -715,8 +737,9 @@ blocks:
       \  self.graficaExcitaciones(self.ax1)\n        \n        self.ax2.cla()    \
       \    \n        self.ax2.set_xlabel('x')\n        self.ax2.set_ylabel('y')\n\
       \        self.ax2.set_zlabel('z')\n        self.ax2.set_title(\"Patron de radiacion\
-      \ del arreglo\")\n\n        self.ax2.plot_surface(X,Y,Z,cmap=\"coolwarm\")\n\
-      \        plt.pause(self.Tsamp)\n                \n        return len(input_items[0])\n"
+      \ del arreglo\")\n        \n        self.ax2.plot_surface(X,Y,Z,cmap=\"coolwarm\"\
+      )\n        \n\n        plt.pause(self.Tsamp)\n                \n        return\
+      \ len(input_items[0])\n"
     affinity: ''
     alias: 3d_f
     comment: ''

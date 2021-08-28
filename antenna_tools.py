@@ -170,7 +170,7 @@ def posiciones_arreglo_sat_ladoyp(Nx,Ny,D):
     a1=posiciones_arreglo_planar(Nx,Ny,D)
     # lo siguiente es para correr el array del centro para despejar el
     # espacio que ocupa el cubo del satelite
-    a1=a1+np.array([-D/2,1.5*D,0])
+    a1=a1+np.array([0,1.5*D,0])
     return a1    
 
 def posiciones_arreglo_sat_ladoydoble(Nx,Nypos,D):
@@ -184,7 +184,7 @@ def posiciones_arreglo_sat_ladoxp(Nx,Ny,D):
     a1=posiciones_arreglo_planar(Nx,Ny,D)
     # lo siguiente es para correr el array del centro para despejar el
     # espacio que ocupa el cubo del satelite
-    a1=a1+np.array([1.5*D,-D/2,0])
+    a1=a1+np.array([1.5*D,0,0])
     return a1    
 def posiciones_arreglo_sat_ladoxdoble(Nxpos,Ny,D):
     # radiadores en el eje y a ambos lados
@@ -202,6 +202,6 @@ def posiciones_arreglo_sat_full(Nx,Ny,D):
  
 
    
-   return np.concatenate((a1,a2)) 
+   #return np.concatenate((a1,a2)) 
       
 
